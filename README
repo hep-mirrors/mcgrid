@@ -1,0 +1,24 @@
+MCgrid Interface for Monte Carlo event generators to APPLgrid.
+Website: http://mcgrid.hepforge.org
+Support: mcgrid@projects.hepforge.org
+
+Software Requirements:
+	• Rivet version 2.0.0 or later.
+	• APPLgrid version 1.4.28 or later.
+	• boost::Filesystem version 3 or later, with libboost-filesystem-dev
+	• Optionally pkg-config for path management.
+  
+The MCgrid package has been tested with the SHERPA v2.0 event generator
+available at: http://sherpa.hepforge.org/trac/wiki
+
+To install the interface:
+	./configure [options]
+	make
+	(sudo) make install
+
+If installing to a nonstandard directory, please ensure that the mcgrid.pc
+file is in the PKG_CONFIG_PATH.
+
+Example MCgrid-enhanced analyses may be found in the
+	/examples
+directory, and (in future) on the HepForge page.
