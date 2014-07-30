@@ -99,10 +99,10 @@ int main(int argc, char* argv[]) {
 	exit(0);
 }
 
-
+#ifndef LHAPDF_MAJOR_VERSION
 #include "LHAPDF/FortranWrappers.h"
 #ifdef FC_DUMMY_MAIN
 int FC_DUMMY_MAIN() { return 1; }
 #endif
-
+#endif
 
