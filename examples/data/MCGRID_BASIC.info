@@ -1,0 +1,17 @@
+Name: MCGRID_BASIC
+Year: 2013
+Summary: Barebones MCgrid analysis
+Experiment:
+Collider:
+SpiresID:
+Status: UNVALIDATED
+Authors:
+ - Nathan Hartland n.p.hartland@ed.ac.uk
+RunInfo:
+  None
+NumEvents: 0
+NeedCrossSection: no
+Description:
+  'Example Rivet analysis with the minimum modifications required to use MCgrid features'
+BibKey: 
+BibTeX: ''

@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: MCgrid
+Description: Rivet Extension methods for APPLgrid filling.
+URL: http://mcgrid.hepforge.org
+Version: @VERSION@
+Requires:
+Libs: -L${libdir} -lmcgrid
+Cflags: -I${includedir}
