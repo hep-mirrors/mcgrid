@@ -40,7 +40,7 @@ namespace MCgrid
     double EventRatio(const int fl1, const int fl2);
     
     // Overloaded to flip flavours in fill
-    int  decideSubProcess(const int iflav1, const int iflav2);
+    int  decideSubProcess(const int iflav1, const int iflav2) const;
     int  decideSubPair(const int sub, const int iflav1, const int iflav2) const;
     
   private:

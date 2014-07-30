@@ -1,5 +1,5 @@
 AC_PREREQ([2.69])
-AC_INIT([MCgrid], [1.0.1], [mcgrid@projects.hepforge.org])
+AC_INIT([MCgrid], [1-dev], [mcgrid@projects.hepforge.org])
 AC_CONFIG_SRCDIR([src/mcgrid.cpp])
 AC_CONFIG_HEADERS([mcgrid/config.h])
 AC_CONFIG_MACRO_DIR([m4])

@@ -177,7 +177,7 @@ namespace MCgrid
     return false;
   }
   
-  int mcgrid_pdf::decideSubProcess(const int iflav1, const int iflav2)
+  int mcgrid_pdf::decideSubProcess(const int iflav1, const int iflav2) const
   {
     // Switch flavours if using antiproton beams
     const int subproc = lumi_pdf::decideSubProcess(beam1*iflav1, beam2*iflav2);
