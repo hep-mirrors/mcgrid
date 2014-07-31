@@ -13,9 +13,12 @@ import glob
 import os
 import sys
 import getopt
+import shutil
+
+import unpack
 
 def usage():
-  print 'Usage: '+sys.argv[0]+' [-b pp/ppbar/pbarp]'
+  print 'Usage: '+sys.argv[0]+' <Process Database> [-b pp/ppbar/pbarp]'
   print '       Run from SHERPA Process directory'
 
 # Arguments
@@ -63,24 +66,47 @@ def LHA(id):
 subprocs=set()
 maps=set()
 
+# Make directory if not already present
 os.chdir(os.getcwd())
-if os.path.exists("./Comix/") is False:
-  print "Error: Comix Directory not found! Please run in SHERPA Process/ Directory"
-  sys.exit(2)
+if not os.path.exists("./tmp"):
+  os.makedirs("./tmp")
 
-# Read all .alt files in subdirectories, identify basic subprocesses
+# unpack database
+unpack.unpack("tmp",sys.argv[1])
+
+# First check for AMEGIC alt files
+
+# Read all .alt files, identify basic subprocesses
 # and add subprocs and subproc maps
-for files in glob.glob("./Comix/*.map"):
-    with open(files, 'r') as f:
-  		line = f.readline()
-  		instate=(files.split("__")[1],files.split("__")[2])
+nfiles=0
+for files in glob.glob("./tmp/*.alt"):
+  with open(files, 'r') as f:
+    line = f.readline()
+    target=(line.split("__")[1],line.split("__")[2])
+    instate=(files.split("__")[1],files.split("__")[2])
+    subprocs.add(target)
+    maps.add((instate,target))
+    maps.add((target,target))
+  nfiles=nfiles+1
 
-  		if (instate[0]=="j" or instate[1]=="j" ):
-  			continue
+# No files found
+if nfiles == 0:
+  print "No Amegic files found, searching for COMIX maps..."
 
-  		target=(line.split()[1].split("__")[1],line.split()[1].split("__")[2])
-  		subprocs.add(target)
-		maps.add((instate,target))
+  # Read all .map files, identify basic subprocesses
+  # and add subprocs and subproc maps
+  for files in glob.glob("./tmp/*.map"):
+      with open(files, 'r') as f:
+        line = f.readline()
+        instate=(files.split("__")[1],files.split("__")[2])
+
+        if (instate[0]=="j" or instate[1]=="j" ):
+          continue
+
+        target=(line.split()[1].split("__")[1],line.split()[1].split("__")[2])
+        subprocs.add(target)
+      maps.add((instate,target))
+
 
 # Print out subprocess summary
 for element in subprocs:
@@ -107,4 +133,6 @@ for element in subprocs:
 
 outfile.close()
 
+# Cleanup
+shutil.rmtree("tmp")
 print "lumi_pdf config written to subprocs.conf"
