@@ -7,7 +7,6 @@
 #define MCgrid_h
 
 #include "mcgrid_pdf.hh"
-#include "mcgrid_binned.hh"
 
 // Rivet includes
 #include "Rivet/Rivet.hh"

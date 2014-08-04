@@ -1,5 +1,5 @@
 lib_LTLIBRARIES = libmcgrid.la
-libmcgrid_la_SOURCES = src/mcgrid.cpp src/mcgrid_pdf.cpp src/mcgrid_binned.cpp src/genericFill.cpp src/sherpaFill.cpp
+libmcgrid_la_SOURCES = src/mcgrid.cpp src/mcgrid_pdf.cpp src/genericFill.cpp src/sherpaFill.cpp
 pkginclude_HEADERS = mcgrid/mcgrid.hh mcgrid/mcgrid_pdf.hh mcgrid/mcgrid_binned.hh
 
 libmcgrid_la_LDFLAGS = -version-info 0:0:0 $(RIVET_LDFLAGS) $(APPLGRID_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LIBS) -fPIC -shared
