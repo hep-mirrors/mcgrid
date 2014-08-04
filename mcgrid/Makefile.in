@@ -359,7 +359,7 @@ libmcgrid_la_CXXFLAGS = $(RIVET_CXXFLAGS) $(APPLGRID_CXXFLAGS) $(BOOST_CXXFLAGS)
 ACLOCAL_AMFLAGS = '-Im4' 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = mcgrid.pc
-EXTRA_DIST = examples manual
+EXTRA_DIST = manual scripts
 all: all-am
 
 .SUFFIXES:

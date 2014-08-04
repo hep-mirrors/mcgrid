@@ -11,4 +11,4 @@ ACLOCAL_AMFLAGS='-Im4'
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = mcgrid.pc
 
-EXTRA_DIST=examples manual
+EXTRA_DIST=manual scripts
