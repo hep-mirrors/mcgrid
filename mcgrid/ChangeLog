@@ -1,3 +1,12 @@
+MCgrid V1.0.2 changes - XXX
+  - Updated subprocess scripts to work with SHERPA's new sqlite database
+  - Merged identifyComix and identifyAmegic scripts into one script
+  - Added reference histogram fill for APPLgrid
+  
+  - Updated for APPLgrid 1.4.56
+  - Updated for SHERPA 2.1.0
+  - Updated for Rivet 2.1.2
+
 MCgrid V1.0.1 changes - 31/01/14
 
   - Fixed URL in mcgrid.pc
