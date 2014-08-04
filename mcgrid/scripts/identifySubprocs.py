@@ -99,7 +99,7 @@ if not os.path.exists("./tmp"):
   os.makedirs("./tmp")
 
 # unpack database
-unpack.unpack("tmp",sys.argv[1])
+unpack("tmp",sys.argv[1])
 
 # First check for AMEGIC alt files
 
