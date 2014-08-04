@@ -99,7 +99,11 @@ namespace MCgrid
   {
     // Create the directory if it doesnt already exist
     Rivet::stringstream filename;
-    filename <<"mcgrid"<< analysis << "/phasespace";
+    filename <<"mcgrid";
+    createPath(filename.str());
+    filename << analysis;
+    createPath(filename.str());
+    filename << "/phasespace";
     createPath(filename.str());
     
     // Write event counter
