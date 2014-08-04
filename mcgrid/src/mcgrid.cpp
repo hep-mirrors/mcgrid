@@ -327,6 +327,9 @@ void grid::fill( double coord, const Rivet::Event& event)
     exit(-1);
   }
   
+  // Fill reference histogram
+  applgrid->getReference()->Fill(coord, info.wgt);
+  
   switch (mode)
   {
     case FILL_GENERIC:
