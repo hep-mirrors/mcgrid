@@ -134,8 +134,9 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libmcgrid_la_LIBADD =
 am__dirstamp = $(am__leading_dot)dirstamp
 am_libmcgrid_la_OBJECTS = src/libmcgrid_la-mcgrid.lo \
-	src/libmcgrid_la-mcgrid_pdf.lo src/libmcgrid_la-genericFill.lo \
-	src/libmcgrid_la-sherpaFill.lo
+	src/libmcgrid_la-mcgrid_pdf.lo \
+	src/libmcgrid_la-mcgrid_binned.lo \
+	src/libmcgrid_la-genericFill.lo src/libmcgrid_la-sherpaFill.lo
 libmcgrid_la_OBJECTS = $(am_libmcgrid_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -351,8 +352,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = libmcgrid.la
-libmcgrid_la_SOURCES = src/mcgrid.cpp src/mcgrid_pdf.cpp src/genericFill.cpp src/sherpaFill.cpp
-pkginclude_HEADERS = mcgrid/mcgrid.hh mcgrid/mcgrid_pdf.hh
+libmcgrid_la_SOURCES = src/mcgrid.cpp src/mcgrid_pdf.cpp src/mcgrid_binned.cpp src/genericFill.cpp src/sherpaFill.cpp
+pkginclude_HEADERS = mcgrid/mcgrid.hh mcgrid/mcgrid_pdf.hh mcgrid/mcgrid_binned.hh
 libmcgrid_la_LDFLAGS = -version-info 0:0:0 $(RIVET_LDFLAGS) $(APPLGRID_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LIBS) -fPIC -shared
 libmcgrid_la_CPPFLAGS = $(RIVET_CPPFLAGS) $(APPLGRID_CPPFLAGS) $(BOOST_CPPFLAGS) -fPIC
 libmcgrid_la_CXXFLAGS = $(RIVET_CXXFLAGS) $(APPLGRID_CXXFLAGS) $(BOOST_CXXFLAGS) -fPIC
@@ -460,6 +461,8 @@ src/libmcgrid_la-mcgrid.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/libmcgrid_la-mcgrid_pdf.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
+src/libmcgrid_la-mcgrid_binned.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
 src/libmcgrid_la-genericFill.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/libmcgrid_la-sherpaFill.lo: src/$(am__dirstamp) \
@@ -478,6 +481,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libmcgrid_la-genericFill.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libmcgrid_la-mcgrid.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libmcgrid_la-mcgrid_binned.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libmcgrid_la-mcgrid_pdf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libmcgrid_la-sherpaFill.Plo@am__quote@
 
@@ -518,6 +522,13 @@ src/libmcgrid_la-mcgrid_pdf.lo: src/mcgrid_pdf.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/mcgrid_pdf.cpp' object='src/libmcgrid_la-mcgrid_pdf.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmcgrid_la_CPPFLAGS) $(CPPFLAGS) $(libmcgrid_la_CXXFLAGS) $(CXXFLAGS) -c -o src/libmcgrid_la-mcgrid_pdf.lo `test -f 'src/mcgrid_pdf.cpp' || echo '$(srcdir)/'`src/mcgrid_pdf.cpp
+
+src/libmcgrid_la-mcgrid_binned.lo: src/mcgrid_binned.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmcgrid_la_CPPFLAGS) $(CPPFLAGS) $(libmcgrid_la_CXXFLAGS) $(CXXFLAGS) -MT src/libmcgrid_la-mcgrid_binned.lo -MD -MP -MF src/$(DEPDIR)/libmcgrid_la-mcgrid_binned.Tpo -c -o src/libmcgrid_la-mcgrid_binned.lo `test -f 'src/mcgrid_binned.cpp' || echo '$(srcdir)/'`src/mcgrid_binned.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libmcgrid_la-mcgrid_binned.Tpo src/$(DEPDIR)/libmcgrid_la-mcgrid_binned.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/mcgrid_binned.cpp' object='src/libmcgrid_la-mcgrid_binned.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmcgrid_la_CPPFLAGS) $(CPPFLAGS) $(libmcgrid_la_CXXFLAGS) $(CXXFLAGS) -c -o src/libmcgrid_la-mcgrid_binned.lo `test -f 'src/mcgrid_binned.cpp' || echo '$(srcdir)/'`src/mcgrid_binned.cpp
 
 src/libmcgrid_la-genericFill.lo: src/genericFill.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmcgrid_la_CPPFLAGS) $(CPPFLAGS) $(libmcgrid_la_CXXFLAGS) $(CXXFLAGS) -MT src/libmcgrid_la-genericFill.lo -MD -MP -MF src/$(DEPDIR)/libmcgrid_la-genericFill.Tpo -c -o src/libmcgrid_la-genericFill.lo `test -f 'src/genericFill.cpp' || echo '$(srcdir)/'`src/genericFill.cpp

@@ -7,6 +7,7 @@
 #define MCgrid_h
 
 #include "mcgrid_pdf.hh"
+#include "mcgrid_binned.hh"
 
 // Rivet includes
 #include "Rivet/Rivet.hh"
@@ -17,10 +18,10 @@
 #include "HepMC/GenEvent.h"
 #include "HepMC/PdfInfo.h"
 
+#include <sys/stat.h>
 #include <string>
 #include <vector>
 #include <cmath>
-#include <sys/stat.h>
 
 // Forward decl
 namespace appl{ class grid; }
@@ -209,9 +210,11 @@ namespace MCgrid {
     double* fl2projection;          //!< Projection of weights over beam 2 partons
     
   };
-
-  // ********************* /MCgrid *****************************
+  
+   // ********************* /MCgrid *****************************
 }
+
+
 
 
 #endif
