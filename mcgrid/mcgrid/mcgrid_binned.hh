@@ -18,10 +18,10 @@ namespace MCgrid
   
   // ********************** Binned grids ***********************
   template<typename T>
-  class binnedGrid {
+  class BinnedGrid {
   public:
-    // binnedGrid constructor
-    binnedGrid();
+    // BinnedGrid constructor
+    BinnedGrid();
     
     const void addGrid(const T& binMin, const T& binMax, gridPtr grid);
     

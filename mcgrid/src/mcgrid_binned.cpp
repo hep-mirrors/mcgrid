@@ -24,16 +24,16 @@ using Rivet::endl;
 using std::map;
 
 template<class T>
-binnedGrid<T>::binnedGrid()
+BinnedGrid<T>::BinnedGrid()
 {
-  cout << "MCgrid::binnedGrid initialised"<<endl;
-  cout << " ** Warning, binnedGrids can me extremely memory intensive **"<<endl;
+  cout << "MCgrid::BinnedGrid initialised"<<endl;
+  cout << " ** Warning, BinnedGrids can me extremely memory intensive **"<<endl;
   cout << " ** Ensure subprocess identification is enabled ** "<<endl;
   return;
 }
 
 template<class T>
-const void binnedGrid<T>::addGrid(const T& binMin, const T& binMax, gridPtr grid)
+const void BinnedGrid<T>::addGrid(const T& binMin, const T& binMax, gridPtr grid)
 {
   if ( binMax <= binMin )
   {
@@ -61,10 +61,10 @@ const void binnedGrid<T>::addGrid(const T& binMin, const T& binMax, gridPtr grid
 }
 
 /*
- * binnedGrid::fill -> largely duplicated from Rivet::BinnedHistogram::fill
+ * BinnedGrid::fill -> largely duplicated from Rivet::BinnedHistogram::fill
  */
 template<class T>
-gridPtr binnedGrid<T>::fill(const T& bin, const double& val, const Rivet::Event& event)
+gridPtr BinnedGrid<T>::fill(const T& bin, const double& val, const Rivet::Event& event)
 {
   typename map<T, gridPtr>::iterator iGrid = gridsByUpperBound.upper_bound(bin);
   if (iGrid == gridsByUpperBound.end()) {
@@ -89,10 +89,10 @@ gridPtr binnedGrid<T>::fill(const T& bin, const double& val, const Rivet::Event&
 }
 
 /*
- * binnedGrid::scale -> scales grids, taking into account relative bin widths
+ * BinnedGrid::scale -> scales grids, taking into account relative bin widths
  */
 template<class T>
-void binnedGrid<T>::scale(const double& scale)
+void BinnedGrid<T>::scale(const double& scale)
 {
   typename map<T, gridPtr>::iterator iGrid = binWidths.begin();
   for (; iGrid != binWidths.end(); iGrid++)
