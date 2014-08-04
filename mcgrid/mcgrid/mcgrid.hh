@@ -17,13 +17,10 @@
 #include "HepMC/GenEvent.h"
 #include "HepMC/PdfInfo.h"
 
-// Boost
-#include "boost/smart_ptr.hpp"
-#include "boost/filesystem.hpp"
-
 #include <string>
 #include <vector>
 #include <cmath>
+#include <sys/stat.h>
 
 // Forward decl
 namespace appl{ class grid; }
@@ -53,8 +50,8 @@ namespace MCgrid {
   // Create directory structure
   static inline void createPath(std::string path)
   {
-    boost::filesystem::path dir(path);
-    boost::filesystem::create_directories(dir);
+    // Now just use a system call to avoid linking to boost
+    mkdir(path.c_str(),0777);
   }
       
   // Fwd Decls

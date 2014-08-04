@@ -388,16 +388,21 @@ void grid::exportgrid()
 {
   // Base filename
   std::stringstream targetname;
-  targetname << "mcgrid" << analysis<<"/";
+  targetname << "mcgrid";
   createPath(targetname.str());
-  
+  targetname << analysis<<"/";
+  createPath(targetname.str());
+
   // Check to see if this was just a phase space fill run
   if (!(applgrid->isOptimised()))
   {
     cout << "MCgrid: Optimising grid phase space ..."<<endl;
     applgrid->optimise();
     cout << "MCgrid: ... grid optimised, writing out phase space grid."<<endl;
-    targetname << "phasespace/"<<path<<".root";
+    targetname << "phasespace/";
+    createPath(targetname.str());
+
+    targetname <<path<<".root";
   } else
   {
     cout << "MCgrid: Exporting final "<<path<<" APPLgrid."<<endl;
