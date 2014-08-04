@@ -37,6 +37,9 @@ namespace MCgrid
     /// Scale/normalise histograms
     void scale(const double& scale);
     
+    // Export contained grids
+    void exportgrids();
+    
   private:
     std::map<T, gridPtr> gridsByUpperBound;
     std::map<T, gridPtr> gridsByLowerBound;
@@ -121,6 +124,16 @@ namespace MCgrid
     {
       (*iGrid).second->scale(scale*(*iGrid).first);
     }
+  }
+  
+  /*
+   * BinnedGrid::exportgrids -> writes out constituent grids
+   */
+  template<class T>
+  void BinnedGrid<T>::exportgrids()
+  {
+    for (int i=0; i<grids.size(); i++)
+      grids[i]->exportgrid();
   }
   
 }
