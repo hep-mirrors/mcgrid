@@ -52,7 +52,7 @@ namespace MCgrid
   BinnedGrid<T>::BinnedGrid()
   {
     cout << "MCgrid::BinnedGrid initialised"<<endl;
-    cout << " ** Warning, BinnedGrids can me extremely memory intensive **"<<endl;
+    cout << " ** Warning, BinnedGrids can be extremely memory intensive **"<<endl;
     cout << " ** Ensure subprocess identification is enabled ** "<<endl;
     return;
   }
@@ -119,11 +119,13 @@ namespace MCgrid
   template<class T>
   void BinnedGrid<T>::scale(const double& scale)
   {
-    typename std::map<T, gridPtr>::iterator iGrid = binWidths.begin();
+    typename std::map<gridPtr, T>::iterator iGrid = binWidths.begin();
     for (; iGrid != binWidths.end(); iGrid++)
     {
-      (*iGrid).second->scale(scale*(*iGrid).first);
+      (*iGrid).first->scale(scale*(*iGrid).second);
+      cout << "binWidth: "<<(*iGrid).second<<endl;
     }
+  
   }
   
   /*
