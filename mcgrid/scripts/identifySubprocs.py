@@ -46,7 +46,6 @@ def unpack(procDir,procDB):
 
 def usage():
   print 'Usage: '+sys.argv[0]+' <Process Database> [-b pp/ppbar/pbarp]'
-  print '       Run from SHERPA Process directory'
 
 # Arguments
 try:
