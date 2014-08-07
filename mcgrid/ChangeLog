@@ -1,4 +1,4 @@
-MCgrid V1.0.2 changes - XX/08/14
+MCgrid V1.1 changes - XX/08/14
 
   - Updated subprocess scripts to work with SHERPA's new sqlite database
 
@@ -7,6 +7,8 @@ MCgrid V1.0.2 changes - XX/08/14
   - Added reference histogram fill for APPLgrid
 
   - Removed additional boost dependencies
+
+  - Added BinnedGrid class for Rivet analyses with a BinnedHistogram
   
   - Updated for APPLgrid 1.4.56
   - Updated for SHERPA 2.1.0
