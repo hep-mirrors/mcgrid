@@ -42,7 +42,7 @@
 \newcommand{\appl} {{\tt APPLgrid }}
 \newcommand{\sherpa} {{\tt SHERPA }}
 
-\title{\mcgrid Version 1.0.X User Guide}
+\title{\mcgrid Version 1.1.X User Guide}
 \author{mcgrid@projects.hepforge.org}
 \begin{document}
 \date{}
@@ -56,12 +56,11 @@
 \subsection{Installation and build dependancies}
 The \mcgrid package is supplied as an external library which may be used when constructing \rivet analyses. It has a few basic dependancies, namely,
 \begin{itemize}
-\item \rivet version 2.0.0 or later.
-\item \appl version 1.4.28 or later.
-\item {\tt boost::Filesystem } version 3 or later.
+\item \rivet version 2.1.2 or later.
+\item \appl version 1.4.56 or later.
 \item Optionally {\tt pkg-config} for path management.
 \end{itemize}
-In order to install the test code supplied with \mcgrid you should additionally have the {\tt LHAPDF} package installed. 
+In order to install the \mcgrid examples and test code you should additionally have the {\tt LHAPDF} and {\tt HOPPET}~\cite{Salam:2008qg} packages installed. 
 \\\\
 \mcgrid may be configured and installed in the conventional way with the autotools build system. In the mcgrid directory you should perform:
 \begin{lstlisting}[language=bash]
@@ -72,7 +71,7 @@ Additionally there are two important configuration options to be noted.
 \begin{itemize}
 \item \lstinline[language=bash]{--disable-sherpafill }
 \end{itemize}
-This option disables the default fill behaviour of \mcgrid which takes into account the PDF structure of event weights originating from the \sherpa\cite{Gleisberg:2008ta} event generator and enables the generic fill mode. You should enable this if you wish to use a different event generator with \mcgrid and the PDF dependance of the supplied weights is via a simple multiplicative factor as described in \cite{cpc}.
+This option disables the default fill behaviour of \mcgrid which takes into account the PDF structure of event weights originating from the \sherpa~\cite{Gleisberg:2008ta} event generator and enables the generic fill mode. You should enable this if you wish to use a different event generator with \mcgrid and the PDF dependance of the supplied weights is via a simple multiplicative factor as described in~\cite{cpc}.
 \begin{itemize}
 \item \lstinline[language=bash]{--disable-namedweights }
 \end{itemize}
@@ -84,7 +83,7 @@ To include \mcgrid functionality in your analysis, you should supply the usual \
 \begin{lstlisting}[language=bash]
  rivet-buildplugin [RivetAnalysis.so] [RivetAnalsis.cc]  \     $(pkg-config mcgrid --cflags) $(pkg-config mcgrid --libs)
 \end{lstlisting}
-An set of example analyses and a typical Makefile are provided in the \lstinline[language=bash]{examples} directory of the \mcgrid package.
+An set of example analyses and a typical Makefile are provided on the \mcgrid hepforge webpage.
 
 \section{Implementing \mcgrid tools in an analysis}
 \subsection{Required modifications}
@@ -101,7 +100,7 @@ Finally in the finalise phase, the event handler must be cleared and exported by
 \begin{lstlisting}[language=c++]
 	MCgrid::PDFHandler::ClearHandler();
 \end{lstlisting}
-With these modifications you have a barebones \mcgrid enabled \rivet analysis. An example of this minimal modification, \lstinline[language=bash]{MCGRID_BASIC} is given in the \lstinline[language=bash]{examples} directory.
+With these modifications you have a barebones \mcgrid enabled \rivet analysis. An example of this minimal modification, \lstinline[language=bash]{MCGRID_BASIC} is given in the examples package.
 \subsection{Booking subprocess PDFs}
 After the basic modifications, you need to specify a \appl subprocess PDF combination. This details which QCD subprocesses contribute to the full process in question, and how the individual parton-parton subchannels are categorised into said subprocesses. This information is provided by \appl \lstinline[language=c++]{lumi_pdf} config files. For the details of how these files may be obtained from \sherpa or constructed by hand, refer to Appendix \ref{sec:subproc}.\\\\
 To initialise a subprocess config file in \mcgrid you should call the following in the rivet \lstinline[language=c++]{init()} phase for each process in the analysis:
@@ -199,7 +198,7 @@ Once you have performed your event selection and are ready to fill a histogram, 
 \end{lstlisting}
 Here \lstinline[language=c++]{coord} specifies the value of the histogrammed quantity for that event, \lstinline[language=c++]{weight} is the usual event weight and \lstinline[language=c++]{event} is the \lstinline[language=c++]{Rivet::Event} object passed to the \lstinline[language=c++]{analyse} method.
 \\\\
-Finally the normalisation of the grids should be set, and the \appl \lstinline[language=bash]{.root} files exported for use. This is accomplished in the \lstinline[language=c++]{finalise} phase of the analysis. For the normalisation the treatment of the grids is once again analogous to that of the histograms. For each histogram/grid pair to be normalised the following should be called:
+Finally the normalisation of the grids should be set, and the \appl \lstinline[language=bash]{.root} files exported for use. This is accomplished in the \lstinline[language=c++]{finalise} phase of the analysis. For the normalisation the treatment of the grids is once again analogous to that of the histograms\footnote{It should be noted that in MCgrid, a function analogous to the {\tt Rivet} \lstinline[language=c++]{normalise} method is not provided. This is an intentional choice, as under PDF variation the resulting predictions cannot be guaranteed to be normalised to one. The user should utilise the scale method as described.}. For each histogram/grid pair to be scaled the following should be called:
    \begin{lstlisting}[language=c++]
 	// Histogram normalisation
 	scale(_h_distribution, normalisation);	
@@ -232,6 +231,15 @@ In the case of very large statistics Monte Carlo runs, it may be advantageous to
   [arXiv:0811.4622 [hep-ph]].
   %%CITATION = ARXIV:0811.4622;%%
   %652 citations counted in INSPIRE as of 27 Nov 2013
+  
+  %\cite{Salam:2008qg}
+\bibitem{Salam:2008qg}
+  G.~P.~Salam and J.~Rojo,
+  %``A Higher Order Perturbative Parton Evolution Toolkit (HOPPET),''
+  Comput.\ Phys.\ Commun.\  {\bf 180} (2009) 120
+  [arXiv:0804.3755 [hep-ph]].
+  %%CITATION = ARXIV:0804.3755;%%
+  %63 citations counted in INSPIRE as of 07 Aug 2014
 
 \bibitem{cpc}
   L.~Del.~Debbio, N.~P.~Hartland, S.~Schumann, [arXiv:1312.4460 [hep-ph]].
@@ -315,17 +323,17 @@ An important point is that these configuration files refer to the numbering sche
 0 2 2 4 4 # UUBar (ppbar)
 1 0 -1 0 -3 0 -5 # gD (ppbar)
 \end{lstlisting}
-Such that the correct PDF treatment of the antiproton beam is taken into account. Examples of subprocess configurations for both $pp$ and $p\bar{p}$ beams can be found in the \lstinline[language=bash]{examples} directory.\\\\
-Provided in the \mcgrid package are a pair of simple python scripts for the automated generation of \appl \lstinline[language=c++]{lumi_pdf} configuration files from the output of either of the two matrix element generators present in \sherpa, {\tt COMIX}\cite{Gleisberg:2008fv} and {\tt AMEGIC++}\cite{Krauss:2001iv}. The user may choose to either construct the appropriate configuration file by hand or make use of these scripts.\\\\
-The tools can be found in the directory \lstinline[language=bash]{mcgrid/scripts}. The two scripts are \\\lstinline[language=bash]{identifyAmegicSubprocs.py} and  \lstinline[language=bash]{identifyComixSubprocs.py}.
+Such that the correct PDF treatment of the antiproton beam is taken into account. Examples of subprocess configurations for both $pp$ and $p\bar{p}$ beams can be found in the examples package.\\\\
+A simple python script is provided in the \mcgrid package for the automated generation of \appl \lstinline[language=c++]{lumi_pdf} configuration files from the output of either of the two matrix element generators present in \sherpa, {\tt COMIX}\cite{Gleisberg:2008fv} and {\tt AMEGIC++}\cite{Krauss:2001iv}. The user may choose to either construct the appropriate configuration file by hand or make use of this script.\\\\
+The tool can be found at \lstinline[language=bash]{mcgrid/scripts/identifySubprocs.py}. 
 \\\\
-The operation of the two scripts is identical. Taking the \sherpa run card which you will use for the full event generation run, you should run with only a handful of events, which is sufficient for the generation of the process information required to form the subprocess configurations. You should then run the appropriate script for your chosen matrix element generator in the produced \lstinline[language=bash]{Process} directory.
+The operation of the identification script is straightforward. Taking the \sherpa run card which you will use for the full event generation run, you should run with only a handful of events, which is sufficient for the generation of the process information required to form the subprocess configurations. You should then run the script with the produced process database as an argument. The process database is typically found in the generated \lstinline[language=bash]{Process} directory.
 
 \begin{lstlisting}[language=bash]
-identify[MEgen]Subprocs.py --beamtype=[pp/ppbar/pbarp]
+identifySubprocs.py --beamtype=[pp/ppbar/pbarp] Process.db
 \end{lstlisting}
 
-Where the argument specifies the beam types used in the event generation. This ensures that the quark flavours are mapped correctly to the proton PDF basis. This script will then produce a \lstinline[language=bash]{subprocs.config} file to be used in your \mcgrid analysis and packaged with the produced \appl file for release.  
+Where the argument specifies the beam types used in the event generation. This ensures that the quark flavours are mapped correctly to the proton PDF basis. This script will then produce a \lstinline[language=bash]{subprocs.config} file to be used in your \mcgrid analysis.  
 \label{sec:subproc}
 
 
