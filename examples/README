@@ -1,12 +1,13 @@
 *** MCGrid examples ***
 n.p.hartland@ed.ac.uk 16/12/2013
                 1.01: 27/01/2014
+		1.1:  08/08/2014
 
 In this directory, there is an example of
 a typical setup for building a MCgrid enabled
 Rivet analysis.
 
-The makefile here will compile two analyses,
+The makefile here will compile three analyses,
 
 MCGRID_BASIC.cc - an example analysis with no content.
 		  this demonstrates the minimal modifications
@@ -17,6 +18,12 @@ MCgrid_CDF_2009_S8383952.cc
 		  analysis as standard in Rivet. This analysis
 		  will produce two APPLgrid files, one for the
 		  total xsec, one for the y distribution.
+
+MCgrid_CMS_2011_S9086218.cc
+		- a modification of a CMS inclusive jet analysis.
+		  This is intended as a demonstration of the
+		  MCGrid::BinnedGrid class, which complements
+		  Rivet's BinnedHistogram.
 
 The makefile will also compile a small test program that
 performs the applgrid convolution with a selected grid and the CT10
