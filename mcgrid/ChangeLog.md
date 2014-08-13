@@ -1,4 +1,6 @@
-## MCgrid v1.1 changes - 08/08/14
+## Change Log
+
+### MCgrid v1.1 changes - 08/08/14
 
 - Updated subprocess scripts to work with SHERPA's new sqlite database
 - Merged `identifyComix` and `identifyAmegic` scripts into one script
@@ -9,7 +11,7 @@
 - Updated for SHERPA 2.1.0
 - Updated for Rivet 2.1.2
 
-## MCgrid v1.0.1 changes - 31/01/14
+### MCgrid v1.0.1 changes - 31/01/14
 
 - Fixed URL in `mcgrid.pc`
 - Added example HepMC record for CDF Z Rapidity analysis
@@ -19,5 +21,5 @@ versions
 enables running single-scale bins from HepMC records
 - Fixed typo in example makefile cxxflags → cppflags for LHAPDF
 
-## MCgrid v1.0 release version - 17/12/2013
+### MCgrid v1.0 release version - 17/12/2013
 
