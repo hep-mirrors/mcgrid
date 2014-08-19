@@ -81,7 +81,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = .
-DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog \
+DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog.md \
 	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
 	$(top_srcdir)/mcgrid/config.h.in $(srcdir)/mcgrid.pc.in \
