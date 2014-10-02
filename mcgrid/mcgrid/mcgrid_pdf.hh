@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <stdint.h>
+#include <set>
 
 // Rivet includes
 #include "Rivet/Rivet.hh"
@@ -74,6 +75,16 @@ namespace MCgrid
     static void BookPDF(std::string const& name, std::string const& analysis, beamType beam1, beamType beam2);
     // Passes an event to mapped subprocess PDFs for counting.
     static void HandleEvent(Rivet::Event const&);
+
+    // Removes analysis from analyses and calls ClearHandler if no analysis is
+    // left. This has to be used instead of ClearHandler in the finalize()
+    // method of an analysis if more than one analysis is being used
+    static void CheckOutAnalysis(std::string const& analysis)
+    {
+      GetHandler(analysis)->analyses.erase(analysis);
+      if (GetHandler(analysis)->analyses.empty())
+        ClearHandler();
+    }
     
     static void ClearHandler()
     {
@@ -97,8 +108,16 @@ namespace MCgrid
     static PDFHandler* handlerInstance;
     
     // Map of subprocess PDFs
-    std::map<int, mcgrid_pdf* > pdfMap;
-    
+    std::map<int, mcgrid_pdf*> pdfMap;
+
+    // Set of analyses used to keep track of the active analyses
+    std::set<std::string> analyses;
+
+    // (Arbitrary) analysis to be used to count events. We get a HandleEvent
+    // call from each analysis used in the run and don't want to double count.
+    // This might be an empty string if the older single-analysis API is used
+    const std::string eventCounterAnalysis;
+
   };
 
 

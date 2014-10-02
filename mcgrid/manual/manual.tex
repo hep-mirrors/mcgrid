@@ -94,13 +94,14 @@ Firstly the \mcgrid headers should be included at the top of the analysis code:
 \end{lstlisting}
 Secondly, in the analysis phase of the code, the \mcgrid event handler must be called for every event passed to \rivet. This is done by adding the following line to the start of the analysis phase:
 \begin{lstlisting}[language=c++]
-	MCgrid::PDFHandler::HandleEvent(event);
+	MCgrid::PDFHandler::HandleEvent(event, histoDir());
 \end{lstlisting}
 Finally in the finalise phase, the event handler must be cleared and exported by adding the following as the final line in the finalise phase:
 \begin{lstlisting}[language=c++]
-	MCgrid::PDFHandler::ClearHandler();
+	MCgrid::PDFHandler::CheckOutAnalysis(histoDir());
 \end{lstlisting}
 With these modifications you have a barebones \mcgrid enabled \rivet analysis. An example of this minimal modification, \lstinline[language=bash]{MCGRID_BASIC} is given in the examples package.
+\footnote{If you are using only one analysis at the same time, you can leave out the second argument in the {\tt HandleEvent} call and use {\tt ClearHandler} without an argument instead of {\tt CheckOutAnalysis}. This is legacy API which you might find in older analyses modified for MCgrid use.}
 \subsection{Booking subprocess PDFs}
 After the basic modifications, you need to specify a \appl subprocess PDF combination. This details which QCD subprocesses contribute to the full process in question, and how the individual parton-parton subchannels are categorised into said subprocesses. This information is provided by \appl \lstinline[language=c++]{lumi_pdf} config files. For the details of how these files may be obtained from \sherpa or constructed by hand, refer to Appendix \ref{sec:subproc}.\\\\
 To initialise a subprocess config file in \mcgrid you should call the following in the rivet \lstinline[language=c++]{init()} phase for each process in the analysis:

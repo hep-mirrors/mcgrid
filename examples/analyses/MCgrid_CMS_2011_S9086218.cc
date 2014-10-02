@@ -68,7 +68,7 @@ namespace Rivet {
     void analyze(const Event &event) {
       
       // MCgrid event counter
-      MCgrid::PDFHandler::HandleEvent(event);
+      MCgrid::PDFHandler::HandleEvent(event, histoDir());
       
       
       const double weight = event.weight();
@@ -90,7 +90,7 @@ namespace Rivet {
       _appl_sigma.exportgrids();
       
       // Clear MCgrid event counter
-      MCgrid::PDFHandler::ClearHandler();
+      MCgrid::PDFHandler::CheckOutAnalysis(histoDir());
     }
 
   private:

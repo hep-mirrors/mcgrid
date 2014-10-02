@@ -1,5 +1,9 @@
 ## Change Log
 
+### MCgrid upcoming release
+
+- Handling of more than one analysis at once (as long as there is memory left)
+
 ### MCgrid v1.1 changes - 08/08/14
 
 - Updated subprocess scripts to work with SHERPA's new sqlite database

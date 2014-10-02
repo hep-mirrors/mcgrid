@@ -225,16 +225,30 @@ namespace MCgrid
 
   void PDFHandler::BookPDF(std::string const& name, std::string const& analysis, beamType beam1, beamType beam2)
   {
+    // Add the analysis to our set of analyses
+    GetHandler(analysis)->analyses.insert(analysis);
+
     const int hashval = hash_str(name.c_str());
     
     if (GetHandler()->pdfMap.find(hashval)!=GetHandler()->pdfMap.end())
     {
-      cerr << "MCgrid::PDFHandler::BookPDF Error - Subprocess PDF "<< name<<" is already booked!"<<endl;
-      exit(-1);
+      // It's okay to book a pdf twice, because the user might be using
+      // multiple analyses and he shouldn't be forced to remove the calls from
+      // subsequent analyses.
+      // It's not okay though if the beam types do not match, so let's check
+      if (iterator->second->beam1 != beam1 || iterator->second->beam2 != beam2) {
+        cout << "MCgrid::PDFHandler::BookPDF Warning - Subprocess PDF ";
+        cout << name << " is already booked and the";
+        cout << "beam types do not match!" << endl;
+        exit(-1);
+      } else {
+        return;
+      }
     }
     
-    GetHandler()->pdfMap.insert(std::make_pair(hashval, new mcgrid_pdf(name, analysis, beam1, beam2) ));
-    cout << "MCgrid::PDFHandler::BookPDF Added subprocess PDF "<<name<<" hash: " << hashval<<endl;
+    GetHandler(analysis)->pdfMap.insert(std::make_pair(hashval, new mcgrid_pdf(name, beam1, beam2) ));
+    cout << "MCgrid::PDFHandler::BookPDF Added subprocess PDF " << name;
+    cout << ", hash: " << hashval << endl;
     
     return;
   }
