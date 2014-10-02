@@ -38,7 +38,7 @@ namespace Rivet {
     /// Perform the per-event analysis
     void analyze(const Event& event) {
       // MCgrid event counter
-      MCgrid::PDFHandler::HandleEvent(event);
+      MCgrid::PDFHandler::HandleEvent(event, histoDir());
       
       // const double weight = event.weight();
 
@@ -56,7 +56,7 @@ namespace Rivet {
       // normalize(_h_YYYY); // normalize to unity
       
       // Clear MCgrid event counter
-      MCgrid::PDFHandler::ClearHandler();
+      MCgrid::PDFHandler::CheckOutAnalysis(histoDir());
     }
 
     //@}
