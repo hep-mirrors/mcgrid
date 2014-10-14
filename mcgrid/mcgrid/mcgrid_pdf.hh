@@ -32,7 +32,7 @@ namespace MCgrid
   class mcgrid_pdf: public lumi_pdf
   {
   public:
-    mcgrid_pdf(std::string const& name, std::string const& analysis, beamType beam1, beamType beam2);
+    mcgrid_pdf(std::string const& name, beamType beam1, beamType beam2);
     ~mcgrid_pdf();
     
     bool isInitialised() const {return initialised;};
@@ -44,16 +44,15 @@ namespace MCgrid
     int  decideSubProcess(const int iflav1, const int iflav2) const;
     int  decideSubPair(const int sub, const int iflav1, const int iflav2) const;
     
+    const beamType beam1;        //!< Type of beam 1 (p/ppbar)
+    const beamType beam2;        //!< Type of beam 2 (p/ppbar)
+    
   private:
     void Export() const;         //!< Write event data to file
     bool Read();                 //!< Read event data from exported file
     
     const std::string pdfname;   //!< Name of Subproc PDF
-    const std::string analysis;  //!< Name of Analysis
     bool initialised;            //!< Phase space run flag
-    
-    const beamType beam1;        //!< Type of beam 1 (p/ppbar)
-    const beamType beam2;        //!< Type of beam 2 (p/ppbar)
     
     int *nPairs;                 //!< Number of partonic channels per subproccess
     
@@ -74,6 +73,7 @@ namespace MCgrid
     // Book a new mcgrid_pdf based upon a config file and beamtypes
     static void BookPDF(std::string const& name, std::string const& analysis, beamType beam1, beamType beam2);
     // Passes an event to mapped subprocess PDFs for counting.
+    static void HandleEvent(Rivet::Event const&, std::string const& analysis);
     static void HandleEvent(Rivet::Event const&);
 
     // Removes analysis from analyses and calls ClearHandler if no analysis is
@@ -93,15 +93,19 @@ namespace MCgrid
     }
     
   private:
-    PDFHandler();
+    PDFHandler(std::string const& eventCounterAnalysis);
     ~PDFHandler();
     
-    static PDFHandler* GetHandler()
+    static PDFHandler* GetHandler(std::string const& eventCounterAnalysis)
     {
       if (handlerInstance == 0)
-        handlerInstance = new PDFHandler();
+        handlerInstance = new PDFHandler(eventCounterAnalysis);
       
       return handlerInstance;
+    }
+    static PDFHandler* GetHandler()
+    {
+      return GetHandler("");
     }
     
     // singleton

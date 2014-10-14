@@ -32,10 +32,9 @@ namespace MCgrid
   
 // **********************  PDF class  **************************
 
-  mcgrid_pdf::mcgrid_pdf(std::string const& name, std::string const& _analysis, beamType _beam1, beamType _beam2):
+  mcgrid_pdf::mcgrid_pdf(std::string const& name, beamType _beam1, beamType _beam2):
   lumi_pdf(name),
   pdfname(name.substr(0,name.find("."))),
-  analysis(_analysis),
   initialised(false),
   beam1(_beam1),
   beam2(_beam2),
@@ -99,11 +98,7 @@ namespace MCgrid
   {
     // Create the directory if it doesnt already exist
     Rivet::stringstream filename;
-    filename <<"mcgrid";
-    createPath(filename.str());
-    filename << analysis;
-    createPath(filename.str());
-    filename << "/phasespace";
+    filename << "mcgrid";
     createPath(filename.str());
     
     // Write event counter
@@ -130,7 +125,7 @@ namespace MCgrid
   bool mcgrid_pdf::Read()
   {
     Rivet::stringstream filename;
-    filename << "mcgrid" <<analysis<<"/phasespace/"<< pdfname<<".evtcount";
+    filename << "mcgrid/" << pdfname<<".evtcount";
     if (Rivet::fileexists(filename.str()))
     {
       // Read phase space file
@@ -212,8 +207,9 @@ namespace MCgrid
 
 // **********************  PDFHandler **************************
 
-  PDFHandler::PDFHandler():
-  pdfMap()
+  PDFHandler::PDFHandler(std::string const& eventCounterAnalysis):
+  pdfMap(),
+  eventCounterAnalysis(eventCounterAnalysis)
   {
   }
 
@@ -230,7 +226,8 @@ namespace MCgrid
 
     const int hashval = hash_str(name.c_str());
     
-    if (GetHandler()->pdfMap.find(hashval)!=GetHandler()->pdfMap.end())
+    std::map<int, mcgrid_pdf*>::iterator iterator = GetHandler(analysis)->pdfMap.find(hashval);
+    if (iterator != GetHandler(analysis)->pdfMap.end())
     {
       // It's okay to book a pdf twice, because the user might be using
       // multiple analyses and he shouldn't be forced to remove the calls from
@@ -251,6 +248,15 @@ namespace MCgrid
     cout << ", hash: " << hashval << endl;
     
     return;
+  }
+
+  void PDFHandler::HandleEvent(Rivet::Event const& event, std::string const& analysis)
+  {
+    // Check if we are using the right analysis
+    if (analysis != GetHandler(analysis)->eventCounterAnalysis)
+      return;
+
+    HandleEvent(event);
   }
 
   void PDFHandler::HandleEvent(Rivet::Event const& event)

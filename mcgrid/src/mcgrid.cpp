@@ -271,7 +271,8 @@ fl2projection ( new double[11] )
   
   // If no phase space grid found, generate a new one
   // Init test grid based on histogram to get correct binning
-  cout << "MCgrid: Generating new APPLgrid for histogram "<< path <<endl;
+  cout << "MCgrid: Generating new APPLgrid for histogram " << path;
+  cout << " of analysis " << analysis << endl;
   createPath("mcgrid"+analysis+"/phasespace/");
   
   applgrid = new appl::grid(getBinning(histo),
