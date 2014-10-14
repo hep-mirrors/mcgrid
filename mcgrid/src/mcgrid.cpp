@@ -38,7 +38,7 @@ static void showBanner()
   cout << endl;
   cout << "*****************************************************************" << endl;
   cout << "                   MCgrid plugin for Rivet                 " << endl;
-  cout << "          L. Del Debbio, N.P. Hartland, S. Schumann          " << endl;
+  cout << "   E. Bothmann, L. Del Debbio, N.P. Hartland, S. Schumann          " << endl;
   cout << "              arXiv:1312.4460,   Version: " << PACKAGE_VERSION << "                "<<endl;
   cout << "                                                               " << endl;
   cout << "            -- Configured for "<<fillString[globalFillMode]<<" fillmode --            " << endl;
@@ -197,10 +197,10 @@ static std::vector<double> getBinning( const Rivet::Histo1DPtr histo)
 {
   std::vector<double> lowEdges;
   for (size_t i=0; i<histo.get()->numBins(); i++)
-    lowEdges.push_back( histo.get()->bin(i).lowEdge() );
+    lowEdges.push_back( histo.get()->bin(i).xMin() );
   
   // Root needs the highest bin also
-  lowEdges.push_back(histo.get()->bin(lowEdges.size()-1).highEdge());
+  lowEdges.push_back(histo.get()->bin(lowEdges.size()-1).xMax());
   
   return lowEdges;
 }
