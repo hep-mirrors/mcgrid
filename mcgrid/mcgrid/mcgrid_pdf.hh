@@ -41,7 +41,7 @@ namespace MCgrid
     double EventRatio(const int fl1, const int fl2);
     
     // Overloaded to flip flavours in fill
-    int  decideSubProcess(const int iflav1, const int iflav2) const;
+    int  decideSubProcess(const int iflav1, const int iflav2);
     int  decideSubPair(const int sub, const int iflav1, const int iflav2) const;
     
     const beamType beam1;        //!< Type of beam 1 (p/ppbar)

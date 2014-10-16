@@ -1,8 +1,10 @@
 ## Change Log
 
-### MCgrid upcoming release
+### MCgrid v1.2 changes - 16/10/14
 
-- Handling of more than one analysis at once (as long as there is memory left)
+- Handling of more than one rivet analysis at once
+- Fixed compatibility issue with YODA 1.3.0
+- Fixed compatibility issue to APPLgrid 1.4.36
 
 ### MCgrid v1.1 changes - 08/08/14
 
