@@ -23,7 +23,7 @@
 - Added example HepMC record for CDF Z Rapidity analysis
 - Modified `applgrid-test` program to broaden compatibility with APPLgrid
 versions
-- Introduced epsilon for comparison of PDF Q^2 with APPLgrid bin edges which
+- Introduced epsilon for comparison of PDF $Q^2$ with APPLgrid bin edges which
 enables running single-scale bins from HepMC records
 - Fixed typo in example makefile cxxflags → cppflags for LHAPDF
 
