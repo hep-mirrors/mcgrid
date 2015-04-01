@@ -61,7 +61,7 @@
 
 (analysis){
   BEGIN_RIVET {
-    -a MCgrid_CDF_2009_S8383952;
+    -a MCgrid_CDF_2009_S8383952 MCgrid_D0_2007_S7075677.cc;
     USE_HEPMC_SHORT 1;
     IGNOREBEAMS 1;
   } END_RIVET;
