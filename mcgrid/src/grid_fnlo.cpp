@@ -231,7 +231,11 @@ namespace MCgrid {
       ftable = ftableNLO;
     }
     // Fill table
-    for (int i=0; i<nSubProc; i++) {
+    // For warmup runs, only the combination (x1, x2, Q2)
+    // is relevant to update the ranges of the grid dimensions.
+    // So filling one subproc is enough
+    const int nSubProcToBeFilled = isWarmup() ? 1 : nSubProc;
+    for (int i=0; i<nSubProcToBeFilled; i++) {
       ftable->fEvent.SetProcessId(i);
       ftable->fEvent.SetWeight(weights[i]/x1/x2);
       ftable->fEvent.SetX1(x1);
