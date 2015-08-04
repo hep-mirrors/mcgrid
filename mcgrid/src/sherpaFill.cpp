@@ -3,7 +3,14 @@
 //  MCgrid 03/10/2013.
 //
 
-#include "mcgrid/mcgrid.hh"
+// System
+#include "config.h"
+
+#include "mcgrid.hh"
+#include "grid.hh"
+#include "sherpaFillInfo.hh"
+
+#include <sstream>
 
 // Rivet includes
 #include "Rivet/Rivet.hh"
@@ -12,9 +19,6 @@
 // HEPMC
 #include "HepMC/GenEvent.h"
 #include "HepMC/PdfInfo.h"
-
-// APPLgrid includes
-#include "appl_grid/appl_grid.h"
 
 using namespace MCgrid;
 
@@ -39,7 +43,8 @@ static inline void p1( const int a, double* proj )
 {
   if ( a == 0 )
   {
-    for (int i=-5; i<=5; i++ )
+    // Do not accidentally introduce initial state quarks that are inactive
+    for (int i=-numberOfActiveFlavors; i<=numberOfActiveFlavors; i++)
       proj[i] = ( (i==0) ? 0:1 );
   } else
   {
@@ -61,71 +66,132 @@ static inline void p2( const int a, double* proj )
 
 /*
  *  grid::sherpaFill
- *  Fills the applgrid from a SHERPA-generated HepMC event.
+ *  Fills the APPLgrid/fastNLO table from a SHERPA-generated HepMC event.
  *  Takes into account the CS counterterm structure as implemented
  *  in SHERPA.
  */
 
-void grid::sherpaFill( double coord, fillInfo const& info)
+void _grid::sherpaFill( double coord, sherpaFillInfo const & info)
 {
-  // Determine normalisation ratio
-  const double norm = applpdf->EventRatio(info.fl1, info.fl2);
-  
-  // Fill weight array with basic me weight
+  const double norm = pdf->EventRatio(info.fl1, info.fl2);
+
+  const ReweightType type(info.reweight_type);
+
+  if (type == ReweightTypeLO) {
+    // LO(PS)
+    fillInfo subInfo(info);
+    subInfo.wgt = info.usr_wgt["Reweight_B"];
+    sherpaBLikeFill(coord, norm, subInfo, 0);
+
+  } else {
+    // NLO(PS)
+
+    // NLO(PS) Born
+    if (type & ReweightTypeB) {
+      fillInfo subInfo(info);
+      subInfo.wgt = info.usr_wgt["Reweight_B"];
+      sherpaBLikeFill(coord, norm, subInfo, 0);
+    }
+
+    // NLO(PS) VI
+    if (type & ReweightTypeVI) {
+      fillInfo subInfo(info);
+      subInfo.wgt = info.usr_wgt["Reweight_VI"];
+      sherpaBLikeFill(coord, norm, subInfo, 1);
+    }
+
+    // NLO(PS) KP
+    if (type & ReweightTypeKP) {
+      sherpaKPFill(coord, norm, info);
+    }
+
+    // NLOPS DADS terms
+    if (type & ReweightTypeDADS) {
+      for (size_t i(0); i < info.DADS_fill_infos.size(); i++) {
+        sherpaBLikeFill(coord, norm, info.DADS_fill_infos[i], 1);
+      }
+    }
+
+    // NLOPS H
+    if (type & ReweightTypeH) {
+      fillInfo subInfo(info);
+      subInfo.wgt = info.usr_wgt["Reweight_B"];
+      sherpaBLikeFill(coord, norm, subInfo, 1);
+    }
+
+    // NLO RS
+    if (type & ReweightTypeRS) {
+      // For RS (sub)events in Sherpa, the pdfinfo object is filled with the
+      // original values. Namely the scale and the (scale-dependent) PDF values
+      // are therefore incorrect. However, the latter are not used, we only
+      // have to fix the scale.
+      fillInfo subInfo(info);
+      subInfo.wgt =   info.usr_wgt["Reweight_RS"];
+      subInfo.pdfQ2 = info.usr_wgt["MuR2"];
+      sherpaBLikeFill(coord, norm, subInfo, 1);
+    }
+
+  }
+}
+
+void _grid::sherpaBLikeFill(double coord, double norm, fillInfo const& info, int ptord)
+{
+  assert(ptord == 0 || ptord == 1); // Only NLO is supported
+
+  const double asfac = pow(info.alphas / (2*M_PI), leadingOrder + ptord);
+  const double meweight = norm * info.wgt / asfac;
+
   zeroWeights();
-  const double meweight = norm*info.usr_wgt[5];
-  fillWeight(info.fl1, info.fl2, meweight/info.asfac);
-  
-  // Determine the total number of sub-weights
-  // corresponding to collinear subtraction terms
-  const int nWeights = info.usr_wgt[6];
-  if ( nWeights != 18 )
-  {
-    applgrid->fill_grid(info.x1, info.x2, info.pdfQ2, coord, weights, info.ptord);
-    return;
+  fillWeight(info.fl1, info.fl2, meweight, false);
+  fillUnderlyingGrid(info.x1, info.x2, info.pdfQ2, coord, ptord);
+}
+
+void _grid::sherpaKPFill(double coord, double norm, sherpaFillInfo const& info)
+{
+  zeroWeights();
+  const double asfac = pow(info.alphas / (2*M_PI), leadingOrder + 1);
+
+  // Read x-prime values
+  const double x1p = info.usr_wgt["Reweight_KP_x1p"];
+  const double x2p = info.usr_wgt["Reweight_KP_x2p"];
+
+  // Prepare weights
+  double w[8];
+  for (int i=0; i<8; i++) {
+    std::ostringstream key;
+    key << "Reweight_KP_wfac_" << i;
+    w[i] = norm * info.usr_wgt[key.str()] / asfac;
   }
   
-  // Read x-prime values
-  const double x1p = info.usr_wgt[7];
-  const double x2p = info.usr_wgt[8];
-  
-  // Read weight array, removing factor of alpha_s
-  // and normalising to ensure subprocess combination is
-  // statistically sound
-  double w[9];
-  for (int i=0; i<9; i++)
-    w[i] = norm*(info.usr_wgt[9+(i+1)])/info.asfac;
-  
   // Factors of xprime
-  w[2]/=x1p;
-  w[4]/=x1p;
-  w[6]/=x2p;
-  w[8]/=x2p;
+  w[1]/=x1p;
+  w[3]/=x1p;
+  w[5]/=x2p;
+  w[7]/=x2p;
   
   // First fill - untransformed x values
   // f_a^1 w_1 F_b(x_b) + f_a(x_a) w_5 F_b^1
-  projectWeights(info.fl1, info.fl2, w[1], p1, pi);
-  projectWeights(info.fl1, info.fl2, w[5], pi, p1);
+  projectWeights(info.fl1, info.fl2, w[0], p1, pi, false);
+  projectWeights(info.fl1, info.fl2, w[4], pi, p1, false);
 
   // f_a^3 w_3 F_b(x_b) + f_a(x_a)w_7 F_b^3
-  projectWeights(info.fl1, info.fl2, w[3], p2, pi);
-  projectWeights(info.fl1, info.fl2, w[7], pi, p2);
-  applgrid->fill_grid(info.x1, info.x2, info.pdfQ2, coord, weights, info.ptord);
+  projectWeights(info.fl1, info.fl2, w[2], p2, pi, false);
+  projectWeights(info.fl1, info.fl2, w[6], pi, p2, false);
+  fillUnderlyingGrid(info.x1, info.x2, info.pdfQ2, coord, 1);
   
   // Prepare for x1p fill
   zeroWeights();
   
   // f_a^2 w_2 F_b(x_b) + f_a^4 w_4 F_b(x_b)
-  projectWeights(info.fl1, info.fl2, w[2], p1, pi);
-  projectWeights(info.fl1, info.fl2, w[4], p2, pi);
-  applgrid->fill_grid(info.x1/x1p, info.x2, info.pdfQ2, coord, weights, info.ptord);
+  projectWeights(info.fl1, info.fl2, w[1], p1, pi, false);
+  projectWeights(info.fl1, info.fl2, w[3], p2, pi, false);
+  fillUnderlyingGrid(info.x1/x1p, info.x2, info.pdfQ2, coord, 1);
   
   // Prepare for x2p fill
   zeroWeights();
   
   // f_a(x_a) w_6 F_b^2 + f_a(x_a) w_8 F_b^4
-  projectWeights(info.fl1, info.fl2, w[6], pi, p1);
-  projectWeights(info.fl1, info.fl2, w[8], pi, p2);
-  applgrid->fill_grid(info.x1, info.x2/x2p, info.pdfQ2, coord, weights, info.ptord);
-  
+  projectWeights(info.fl1, info.fl2, w[5], pi, p1, false);
+  projectWeights(info.fl1, info.fl2, w[7], pi, p2, false);
+  fillUnderlyingGrid(info.x1, info.x2/x2p, info.pdfQ2, coord, 1);  
 }

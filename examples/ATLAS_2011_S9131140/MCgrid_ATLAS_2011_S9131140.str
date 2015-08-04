@@ -1,0 +1,122 @@
+# -*-sh-*-
+# ==================================================================== #
+#
+#   A steering file for creating a fastNLO table with MCgrid
+#   Automatically generated from the PDF combination file
+#
+#     MCgrid_ATLAS_2011_S9131140.config
+#
+# ==================================================================== #
+
+
+# -------------------------------------------------------------------- #
+# General settings 
+# -------------------------------------------------------------------- #
+
+# NOTE: Please review the following settings and modify them if needed
+
+# Unit of data cross sections (negative power of 10, e.g. 12->pb, 15->fb)
+PublicationUnits              12
+
+# Units of coeffients as passed to fastNLO (negative power of 10)
+UnitsOfCoefficients           12
+
+# Specify scale name and unit
+ScaleDescriptionScale1        "Description [GeV]"
+
+# Labels (symbol and unit) for the measurement dimension
+DimensionLabels {
+   "Quantity [Unit]"
+}
+
+## NOTE: The following settings can be uncommented to overwrite MCgrid defaults
+
+## MCgrid default: Rivet histogram name
+#ScenarioName                 Name
+
+ScenarioDescription {
+   "Description"
+   "RIVET_ID=MCgrid_ATLAS_2011_S9131140/d01-x01-Y03"
+}
+
+## MCgrid default: ["Sherpa"]
+#CodeDescription {
+#   "My Event Generator"
+#}
+
+## Number of decimal digits to store in the output table
+#OutputPrecision              8
+
+## Global output verbosity of fastNLO
+# Possible values are DEBUG, MANUAL, INFO, WARNING, ERROR, SILENT
+#GlobalVerbosity              INFO
+
+## Apply PDF reweighting for an optimized interpolation
+#ApplyPDFReweighting          true
+
+## Set limits for scale nodes to bin borders, if possible
+#CheckScaleLimitsAgainstBins  true
+
+
+# -------------------------------------------------------------------- #
+# PDF combination settings 
+# -------------------------------------------------------------------- #
+
+PDF1                           2212
+PDF2                           2212
+
+NSubProcessesLO                  12
+NSubProcessesNLO                 12
+NSubProcessesNNLO                12
+IPDFdef3LO                       12
+IPDFdef3NLO                      12
+IPDFdef3NNLO                     12
+
+PartonCombinationsLO {{
+  # one line here!
+  0 -4  0 -2  0
+  1  3  0  5  0  1  0
+  2  3 -3  5 -5  1 -1
+  3  0 -4  0 -2
+  4 -1  0 -3  0 -5  0
+  5 -1  1 -3  3 -5  5
+  6  0  4  0  2
+  7  2  0  4  0
+  8 -4  4 -2  2
+  9  0 -3  0 -1  0 -5
+ 10  4 -4  2 -2
+ 11  0  3  0  5  0  1
+}}
+
+PartonCombinationsNLO {{
+
+  0 -4  0 -2  0
+  1  3  0  5  0  1  0
+  2  3 -3  5 -5  1 -1
+  3  0 -4  0 -2
+  4 -1  0 -3  0 -5  0
+  5 -1  1 -3  3 -5  5
+  6  0  4  0  2
+  7  2  0  4  0
+  8 -4  4 -2  2
+  9  0 -3  0 -1  0 -5
+ 10  4 -4  2 -2
+ 11  0  3  0  5  0  1
+}}
+
+PartonCombinationsNNLO {{
+
+  0 -4  0 -2  0
+  1  3  0  5  0  1  0
+  2  3 -3  5 -5  1 -1
+  3  0 -4  0 -2
+  4 -1  0 -3  0 -5  0
+  5 -1  1 -3  3 -5  5
+  6  0  4  0  2
+  7  2  0  4  0
+  8 -4  4 -2  2
+  9  0 -3  0 -1  0 -5
+ 10  4 -4  2 -2
+ 11  0  3  0  5  0  1
+}}
+

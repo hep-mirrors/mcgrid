@@ -12,7 +12,7 @@
 import glob
 import os
 import sys
-import getopt
+import argparse
 import shutil
 
 # *************** Database Unpack ******************
@@ -43,45 +43,45 @@ def unpack(procDir,procDB):
 
 # **************************************************
 
+beam_specs = ['pp', 'ppbar', 'pbarp', 'pbarpbar']
 
-def usage():
-  print 'Usage: '+sys.argv[0]+' <Process Database> [-b pp/ppbar/pbarp]'
+parser = argparse.ArgumentParser(description=__doc__)
 
-# Arguments
-try:
-  opts, args = getopt.getopt(sys.argv[1:], "hb:", ["help", "beamtype="])
-except getopt.GetoptError as err:
-  # print help information and exit:
-  print str(err) # will print something like "option -a not recognized"
-  usage()
-  sys.exit(2)
-beamtype = "pp"
-verbose = False
-for o, a in opts:
-  if o in ("-h", "--help"):
-    usage()
-    sys.exit()
-  elif o in ("-b", "--beamtype"):
-    beamtype = a
-  else:
-    assert False, "unhandled option"
+# Positional argument for specifying the PDF combination file
+parser.add_argument('process_database', metavar='PROCESS_DATABASE',
+                    help='The path to the sqlite process database file written out by Sherpa')
 
+# Optional argument for specifying beams
+parser.add_argument('-b', '--beamtype',
+                    choices=beam_specs,
+                    help='The specification of the beams the fastNLO steering'
+                    + ' file will be used for. The default is pp.')
 
-# Determine beam types
-if beamtype == "ppbar":
-  beam1=1
-  beam2=-1
-elif beamtype == "pbarp":
-  beam1=-1
-  beam2=1
-elif beamtype == "pp":
-  beam1=1
-  beam2=1
+# Optional argument for specifying the output file path
+parser.add_argument('-o', '--target-path',
+                    default='subprocs.config',
+                    help='The path for the generated MadGraph PDF combination file.')
+
+args = parser.parse_args()
+
+# Warn the user if the default beams are used
+if args.beamtype is None:
+    print('WARNING: The default beams are used (pp). Use the --beamtype'
+          + ' option to change this.')
+    args.beamtype = 'pp'
+
+# Translate the beam spec in a pair of signs
+if args.beamtype == 'pp':
+    beams = (1, 1)
+elif args.beamtype == 'ppbar':
+    beams = (1, -1)
+elif args.beamtype == 'pbarp':
+    beams = (-1, 1)
+elif args.beamtype == 'pbarpbar':
+    beams = (-1, -1)
 else:
-  print "Error: Beamtype " + beamtype + " is unrecognised"
-  sys.exit(2)
-
-print "Using " + beamtype + " beams"
+    raise Exception('The beam spec could not be translated into a pair of signs')
+beamsPDG = (beams[0] * 2212, beams[1] * 2212)
 
 # Parton labelling
 partons=['tb','bb','cb','sb','ub','db','G','d','u','s','c','b','t']
@@ -98,7 +98,7 @@ if not os.path.exists("./tmp"):
   os.makedirs("./tmp")
 
 # unpack database
-unpack("tmp",sys.argv[1])
+unpack("tmp",args.process_database)
 
 # First check for AMEGIC alt files
 
@@ -139,10 +139,10 @@ for element in subprocs:
 	print element
 	for sub in maps:
 		if (sub[1] == element):
-			print beam1*LHA(sub[0][0]), beam2*LHA(sub[0][1])
+			print beams[0]*LHA(sub[0][0]), beams[1]*LHA(sub[0][1])
 
 # Open target output file
-outfile = open('subprocs.conf','w')
+outfile = open(args.target_path,'w')
 outfile.write('0\n')
 
 # Print subprocesses to file
@@ -152,7 +152,7 @@ for element in subprocs:
 	line = ""
 	for sub in maps:
 		if (sub[1] == element):
-			line += str(beam1*LHA(sub[0][0])) + " "+ str(beam2*LHA(sub[0][1])) +" "
+			line += str(beams[0]*LHA(sub[0][0])) + " "+ str(beams[1]*LHA(sub[0][1])) +" "
 			npairs += 1
 	outfile.write(str(ielement)+" "+str(npairs)+ " "+ line+"\n")
 	ielement+=1
@@ -161,4 +161,4 @@ outfile.close()
 
 # Cleanup
 shutil.rmtree("tmp")
-print "lumi_pdf config written to subprocs.conf"
+print "lumi_pdf config written to subprocs.config"

@@ -6,214 +6,188 @@
 #ifndef MCgrid_h
 #define MCgrid_h
 
-#include "mcgrid_pdf.hh"
-
-// Rivet includes
-#include "Rivet/Rivet.hh"
-#include "Rivet/Event.hh"
-#include "Rivet/Tools/RivetYODA.hh"
-
-// HEPMC
-#include "HepMC/GenEvent.h"
-#include "HepMC/PdfInfo.h"
-
-#include <sys/stat.h>
 #include <string>
-#include <vector>
-#include <cmath>
 
-// Forward decl
-namespace appl{ class grid; }
+#include "Rivet/Rivet.hh"
+#include "HepMC/GenEvent.h"
+
+#include "mcgrid/mcgrid_pdf.hh"
 
 namespace MCgrid {
-  
-  // Denotes the fill method to be used
-  const std::string fillString[2] = {"GENERIC", "SHERPA "};
-  typedef enum fillMode {FILL_GENERIC, FILL_SHERPA} fillMode;
-  
-#ifdef FILLMODE_SHERPA
-  const fillMode globalFillMode = FILL_SHERPA;
-#else
-  const fillMode globalFillMode = FILL_GENERIC;
-#endif
 
-  // Weight projection typedef
-  typedef void (*wgtProjector)(const int, double*);
-  
-  // Convert PDG codes to LHAPDF for partons
-  static inline int pdgToLHA( int pdg )
+  // ********************* subprocess configuration *******************
+
+  struct subprocessConfig
   {
-    if (pdg == 21 ) return 0;
-    return pdg;
-  }
-  
-  // Create directory structure
-  static inline void createPath(std::string path)
-  {
-    // Now just use a system call to avoid linking to boost
-    mkdir(path.c_str(),0777);
-  }
-      
-  // Fwd Decls
-  class mcgrid_pdf;
-  
-  // ********************* fillInfo ************************
-
-  /*
-   * Basic information required in most fills
-   */
-  class fillInfo
-  {
-  public:
-    fillInfo( Rivet::Event const&, int const& leadingOrder);
-
-    const double wgt;
-    const std::vector<double> usr_wgt;
-    
-    const int fl1;
-    const int fl2;
-    
-    const double x1;
-    const double x2;
-    const double pdfQ2;
-    
-    const double fx1;
-    const double fx2;
-
-    const int aspowers;
-    const double alphas;
-    const double asfac;
-    const double ptord;
-    
-  private:
-    // Convert HepMC formatted usr_weights to local ordering
-    std::vector<double> getHepMCWeights(Rivet::Event const&);
+    subprocessConfig(std::string const & fileName, const beamType beam1, const beamType beam2):
+      fileName(fileName),
+      beam1(beam1),
+      beam2(beam2) {}
+    std::string const fileName; //!< Can be an APPLgrid subprocess config file or a fastNLO steering file
+    const beamType beam1;
+    const beamType beam2;   
   };
-  
-  // ********************* appl::grid architectures ************************
-  
-  struct gridArch
+
+  // ********************* grid architectures *************************
+
+  struct baseGridArch
   {
-    gridArch( const int _nX,
-              const int _nQ,
-              const int _xOrd,
-              const int _qOrd ):
-    nX(_nX),
-    nQ(_nQ),
-    xOrd(_xOrd),
-    qOrd(_qOrd)
-    {}
-    
+    baseGridArch(const int _nX, const int _nQ):
+      nX(_nX),
+      nQ(_nQ) {}
+    const bool isEmpty() const { return (nX == 0 || nQ == 0); }
     const int nX;       //!< Number of points in x-grid
     const int nQ;       //!< Number of points in Q-grid
+  };
+
+  struct applGridArch : public baseGridArch
+  {
+    applGridArch(const int _nX, const int _nQ,
+                 const int _xOrd, const int _qOrd):
+      baseGridArch(_nX, _nQ),
+      xOrd(_xOrd),
+      qOrd(_qOrd) {}
+
     const int xOrd;     //!< Order of interpolation in x
     const int qOrd;     //!< Order of interpolation in Q
   };
+
+  // Typical APPLgrid precisions
+  static const applGridArch highPrecAPPLgridArch(30,20,5,5);
+  static const applGridArch medPrecAPPLgridArch(20,10,3,3);
+  static const applGridArch lowPrecAPPLgridArch(10,5,2,2);
+
+  struct fastnloGridArch : public baseGridArch
+  {
+    fastnloGridArch(const int _nX, const int _nQ,
+                    std::string const _xkernel,
+                    std::string const _qkernel,
+                    std::string const _xdistanceMeasure,
+                    std::string const _qdistanceMeasure,
+                    bool _nXPerMagnitude = false):
+      baseGridArch(_nX, _nQ),
+      xkernel(_xkernel),
+      qkernel(_qkernel),
+      xdistanceMeasure(_xdistanceMeasure),
+      qdistanceMeasure(_qdistanceMeasure),
+      nXPerMagnitude(_nXPerMagnitude) {}
+
+    const bool isEmpty() const {
+      return (baseGridArch::isEmpty()
+        || xkernel == "" || qkernel == ""
+        || xdistanceMeasure == "" || qdistanceMeasure == "");
+    }
+
+    // Interpolation kernels as of fastnlo_toolkit-2.3.1pre-1871:
+    // Catmull, Lagrange, OneNode, Linear
+    std::string const xkernel; //!< Value for the x interpolation kernel
+    std::string const qkernel; //!< Value for the Q interpolation kernel
+
+    // Distance measures as of fastnlo_toolkit-2.3.1pre-1871:
+    // linear, loglog025, log10, sqrtlog10
+    std::string const xdistanceMeasure; //!< Value for the x distance measure
+    std::string const qdistanceMeasure; //!< Value for the Q distance measure
+
+    const bool nXPerMagnitude;
+  };
+
+  // Typical APPLgrid precisions
+  static const fastnloGridArch emptyFastNLOgridArch(0,0,"","", "", "");
+  static const fastnloGridArch highPrecFastNLOgridArch(30,20,"Lagrange","Lagrange", "sqrtlog10", "loglog025");
+  static const fastnloGridArch medPrecFastNLOgridArch(20,10,"Lagrange","Lagrange", "sqrtlog10", "loglog025");
+  static const fastnloGridArch lowPrecFastNLOgridArch(10,5,"Lagrange","Lagrange", "sqrtlog10", "loglog025");
   
-  // Typical grid precisions
-  static const gridArch highPrec(30,20,5,5);
-  static const gridArch medPrec(20,10,3,3);
-  static const gridArch lowPrec(10,5,2,2);
+  // ********************* grid configurations ************************
+
+  struct gridConfig
+  {
+    gridConfig(const int _lo):
+      lo(_lo) {}
+
+    // This is just to make this type polymorphic for later downcasts
+    virtual ~gridConfig() {}
+
+    const int lo;
+  };
+
+  struct applGridConfig : public gridConfig
+  {
+    applGridConfig(const int _lo,
+                   const subprocessConfig _subprocConfig,
+                   const applGridArch _arch,
+                   const double _xmin,
+                   const double _xmax,
+                   const double _q2min,
+                   const double _q2max):
+      gridConfig(_lo),
+      subprocConfig(_subprocConfig),
+      arch(_arch),
+      xmin(_xmin),
+      xmax(_xmax),
+      q2min(_q2min),
+      q2max(_q2max) {}
+
+    const subprocessConfig subprocConfig;
+    const applGridArch arch;
+    const double xmin;
+    const double xmax;
+    const double q2min;
+    const double q2max;
+  };
+
+  struct fastnloConfig: public gridConfig
+  {
+    fastnloConfig(const int _lo,
+                  const subprocessConfig _subprocConfig,
+                  const fastnloGridArch _arch,
+                  const double _centerOfMassEnergy):
+      gridConfig(_lo),
+      subprocConfig(_subprocConfig),
+      arch(_arch),
+      centerOfMassEnergy(_centerOfMassEnergy) {}
+
+    const subprocessConfig subprocConfig;
+    const fastnloGridArch arch;
+    const double centerOfMassEnergy;    //!< Center of mass energy in GeV
+  };
+
+  // **********************   Config Functions **************************
+
+  // Set the number of active flavours, this affects Catani Seymour KP terms.
+  // The default number of active flavours is 5, i.e. the top is excluded.
+  // If you have a massive bottom quark, you might want to set this to 4.
+  void setNumberOfActiveFlavors(const int n);
   
   // *********************** Booking Functions **************************
-  
-  // Book an mcgrid_pdf object based upon a subprocess combination file
-  // Don't need to keep track of the pointer, it's kept by APPLgrid
-  void bookPDF(std::string const& name, std::string const& analysis, beamType beam1, beamType beam);
-  
+    
   // Book a MCgrid::grid object, returning the shared pointer
   class grid; typedef boost::shared_ptr<grid> gridPtr;
-  gridPtr bookGrid( const Rivet::Histo1DPtr hist,         // Corresponding Rivet Histogram
-                    const std::string histoDir,           // Rivet Histogram directory
-                    const std::string pdfname,            // APPLgrid pdf id string
-                    const int    LO,                      // Leading order power of alpha_s
-                    const double xmin,                    // Minimum value of parton x in the grid
-                    const double xmax,                    // Maximum value of parton x
-                    const double q2min,                   // Minimum event scale
-                    const double q2max,                   // Maximum event scale
-                    const gridArch arch = highPrec        // grid architecture
-  );
+  template<class T>
+  gridPtr bookGrid(const Rivet::Histo1DPtr hist,     // Corresponding Rivet Histogram
+                   const std::string histoDir,       // Rivet Histogram directory
+                   T config                          // Either a fastNLOConfig or an applGridConfig instance
+                   );
  
-  // **********************  rivet_app::grid Class **************************
+  // **********************  MCgrid::grid Class **************************
 
   /**
-   * MCgrid::grid provides a wrapper for an appl_grid object,
+   * MCgrid::grid provides a wrapper for an appl_grid or fast_nlo object,
    * corresponding to a single Rivet histogram
    **/
+
   class grid {
   public:
     
-    // Create a new APPLgrid based upon a YODA histogram
-    grid(const Rivet::Histo1DPtr hist,
-         const std::string pdfname,
-         const std::string analysis,
-         const int    LO,
-         const double xmin,
-         const double xmax,
-         const double q2min,
-         const double q2max,
-         const gridArch arch
-         );
+    // Fill the grid with an event
+    virtual void fill( double coord, const Rivet::Event& event) = 0;
     
-    ~grid();
+    // Write the grid to file
+    virtual void exportgrid() = 0;
     
-    // Fill the applgrid with an event
-    void fill( double coord, const Rivet::Event& event);
-    
-    // Write the APPLgrid to file
-    void exportgrid();
-    
-    // Scale the weight output of the APPLgrid
-    void scale( double const& scale);
-    
-  private:
-  
-    // Zeros the internal weight container;
-    void zeroWeights();
-    
-    // Fillmodes specify the conversion from HepMC to APPLgrid
-    void genericFill( double coord, fillInfo const&); // Basic fillmode
-    void sherpaFill ( double coord, fillInfo const&); // SHERPA fillmode
-    
-    // Populate the subprocess weight array with a single weight
-    void fillWeight(const int fl1,
-                    const int fl2,
-                    const double eventweight
-                    );
-    
-    // Project a weight across other parton channels based upon the basic
-    // initial beam flavours.
-    void projectWeights( const int fl1,   // beam 1 flavour
-                         const int fl2,   // beam 2 flavour
-                         const double w,  // weight to be projected
-                         wgtProjector,    // beam 1 projector
-                         wgtProjector     // beam 2 projector
-    );
-    
-    // **************************** Attributes ****************************
-    
-    const Rivet::Histo1DPtr histo;  //!< Pointer to associated rivet histogram
-    const fillMode  mode;           //!< Determines fill method call
-    
-    const int   leadingOrder;       //!< Leading order of process
-    const std::string path;         //!< Path identifier obtained from histogram
-    const std::string analysis;     //!< Analysis subdirectory
-    
-    mcgrid_pdf*   applpdf;          //!< PDF for subprocess classification
-    appl::grid*  applgrid;          //!< Pointer to APPLgrid
-    
-    const int nSubProc;             //!< Number of active subprocesses
-    double*    weights;             //!< Array of subprocess weights to be passed to appl::grid::fill
-    
-    double* fl1projection;          //!< Projection of weights over beam 1 partons
-    double* fl2projection;          //!< Projection of weights over beam 2 partons
-    
+    // Scale the weight output of the grid
+    virtual void scale( double const& scale) = 0;
   };
   
-   // ********************* /MCgrid *****************************
 }
-
-
-
 
 #endif

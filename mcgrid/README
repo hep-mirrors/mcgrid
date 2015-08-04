@@ -1,17 +1,26 @@
-MCgrid Interface for Monte Carlo event generators to APPLgrid.
-Version: 1.1
+MCgrid Interface for Monte Carlo event generators to APPLgrid and fastNLO.
+Version: 2.0
 Website: http://mcgrid.hepforge.org
 Support: mcgrid@projects.hepforge.org
 
 Software Requirements:
 	• Rivet version 2.1.2 or later.
-	• APPLgrid version 1.4.56 or later.
+	• APPLgrid version 1.4.56 or later and/or fastNLO Toolkit 2.3pre-2125 or
+    later.
 	• Optionally pkg-config for path management.
   
-The MCgrid package has been tested with the SHERPA v2.X event generator
+The MCgrid package has been tested with the SHERPA v2.2.X event generator
 available at: http://sherpa.hepforge.org/trac/wiki
 
-To install the interface:
+MCgrid 2.X is not compatible with earlier versions of Sherpa.
+Please use MCgrid 1.X for SHERPA 2.0.0-2.2.0.
+To enable using Sherpa with MCgrid, you should use
+its configuration options --enable-rivet and --enable-hepmc2.
+
+Make sure that the binaries rivet-config, applgrid-config and/or fnlo-tk-config
+can be find using your PATH environment variable. Then install the MCgrid
+interface:
+
 	./configure [options]
 	make && make install
 

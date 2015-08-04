@@ -1,0 +1,43 @@
+---
+### Figure settings ###
+title:              'MC@NLO Z production @ Tevatron using CT10'
+x_title:            '$Z |y|$'
+
+### Main plot settings ###
+legend_loc:         lower left
+
+### Overwritable plot settings ###
+y_title:            '$\mathrm{d}\sigma/\mathrm{d}|y|$ [pb]'
+# y_tick_prune_lower: yes
+
+### Settings and overwrites for diff subplot ###
+diff: {
+  y_title:            "Ratio to Sherpa",
+  # y_tick_prune_upper: yes
+  y_lim:              [0.999, 1.001]
+}
+
+### Distributions for plotting and/or normalization ###
+distributions:
+
+  - path:             appl.yoda
+    label:            MCgrid/APPLgrid
+    histogram_name:   /MCgrid_CDF_2009_S8383952/d02-x01-y01
+    diff:             {hidden: no}
+
+  - path:             fnlo.yoda
+    label:            MCgrid/fastNLO
+    histogram_name:   /MCgrid_CDF_2009_S8383952/d02-x01-y01
+    diff:             {hidden: no}
+
+  - path:             reweight.yoda
+    label:            Reweighting
+    histogram_name:   /MCgrid_CDF_2009_S8383952/d02-x01-y01
+    diff:             {hidden: no}
+
+  - path:             sherpa.yoda
+    label:            Sherpa
+    histogram_name:   /MCgrid_CDF_2009_S8383952/d02-x01-y01
+    diff:             {hidden: yes, normalized: yes}
+
+...

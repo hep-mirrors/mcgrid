@@ -10,11 +10,6 @@
 
 #include "mcgrid.hh"
 
-// Rivet includes
-#include "Rivet/Rivet.hh"
-#include "Rivet/Event.hh"
-
-
 using Rivet::cerr;
 using Rivet::cout;
 using Rivet::endl;
@@ -26,7 +21,7 @@ namespace MCgrid
   class BinnedGrid {
   public:
     // BinnedGrid constructor
-    BinnedGrid();
+    // BinnedGrid();
     
     const void addGrid(const T& binMin, const T& binMax, gridPtr grid);
     
@@ -45,21 +40,18 @@ namespace MCgrid
     std::map<T, gridPtr> gridsByLowerBound;
     std::vector<gridPtr> grids;
     std::map<gridPtr, T> binWidths;
+
+    void outputMemoryWarningOnce();
   };
-  
-  
-  template<class T>
-  BinnedGrid<T>::BinnedGrid()
-  {
-    cout << "MCgrid::BinnedGrid initialised"<<endl;
-    cout << " ** Warning, BinnedGrids can be extremely memory intensive **"<<endl;
-    cout << " ** Ensure subprocess identification is enabled ** "<<endl;
-    return;
-  }
   
   template<class T>
   const void BinnedGrid<T>::addGrid(const T& binMin, const T& binMax, gridPtr grid)
   {
+    // It's better to do this here instead of in the constructor
+    // to avoid accidental output when Rivet is loading the analysis
+    // without actually using it
+    outputMemoryWarningOnce();
+
     if ( binMax <= binMin )
     {
       cerr << "MCgrid::binnnedGrid Error - invalid bin minimum ("<<binMin<<") and maximum ("<<binMax<<")."<<endl;
@@ -83,6 +75,17 @@ namespace MCgrid
     binWidths.insert(std::make_pair(grid, binMax-binMin));
     
     return;
+  }
+
+  template<class T>
+  void BinnedGrid<T>::outputMemoryWarningOnce() {
+    static bool once_token = false;
+    if (!once_token) {
+      cout << "MCgrid::BinnedGrid is used"<<endl;
+      cout << " ** Warning, BinnedGrids can be extremely memory intensive **"<<endl;
+      cout << " ** It's a good idea to enable subprocess identification ** "<<endl;
+      once_token = true;
+    }
   }
   
   /*
@@ -122,7 +125,7 @@ namespace MCgrid
     typename std::map<gridPtr, T>::iterator iGrid = binWidths.begin();
     for (; iGrid != binWidths.end(); iGrid++)
     {
-      (*iGrid).first->scale(scale*(*iGrid).second);
+      (*iGrid).first->scale(scale/(*iGrid).second);
       cout << "binWidth: "<<(*iGrid).second<<endl;
     }
   
@@ -134,7 +137,7 @@ namespace MCgrid
   template<class T>
   void BinnedGrid<T>::exportgrids()
   {
-    for (int i=0; i<grids.size(); i++)
+    for (size_t i=0; i<grids.size(); i++)
       grids[i]->exportgrid();
   }
   

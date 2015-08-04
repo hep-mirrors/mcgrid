@@ -1,6 +1,6 @@
 AC_PREREQ([2.69])
-AC_INIT([MCgrid], [1.1-dev], [mcgrid@projects.hepforge.org])
-AC_CONFIG_SRCDIR([src/mcgrid.cpp])
+AC_INIT([MCgrid], [2.0], [mcgrid@projects.hepforge.org])
+AC_CONFIG_SRCDIR([src/grid.cpp])
 AC_CONFIG_HEADERS([mcgrid/config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -14,14 +14,6 @@ AS_IF([test "x$enable_sherpafill" != "xno"], [
     AC_DEFINE([FILLMODE_SHERPA],, [MCGrid SHERPA fillmode])
 ])
 
-# Check for named weights
-AC_ARG_ENABLE([namedweights],
-    AS_HELP_STRING([--disable-namedweights], [Disable HepMC named weights interface (for older versions of HepMC)]))
-
-AS_IF([test "x$enable_namedweights" != "xno"], [
-    AC_DEFINE([HEPMC2NAMED],, [Use HepMC named weights])
-])
-
 # Libtool
 LT_INIT
 
@@ -29,9 +21,9 @@ LT_INIT
 AC_PROG_CXX
 AC_PROG_INSTALL
 
-# Checks for Rivet and APPLgrid
+# Checks for Rivet and grid implementations
 AC_SEARCH_RIVET
-AC_SEARCH_APPLGRID
+AC_SEARCH_APPLGRID_OR_FASTNLO
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
