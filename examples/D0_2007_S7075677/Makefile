@@ -16,8 +16,8 @@ MCFLAGS=$(shell pkg-config mcgrid --cflags)
 MCLDFLAGS=$(shell pkg-config mcgrid --libs)
 
 # combine flags
-PLGFLAGS=$(RFLAGS) $(MCFLAGS)
-PLGLDFLAGS=$(RLDFLAGS) $(MCLDFLAGS)
+PLGFLAGS=$(MCFLAGS) $(RFLAGS) 
+PLGLDFLAGS=$(MCLDFLAGS) $(RLDFLAGS) 
 
 # plugin input/output and data
 RTARGET = analysis/Rivet$(ANALYSIS)Plugins.so
