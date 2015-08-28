@@ -166,11 +166,13 @@ namespace MCgrid
       if (GetHandler(analysis)->analyses.empty())
         ClearHandler();
     }
+
+    static uint64_t NEvents() { return (handlerInstance == 0) ? 0 : handlerInstance->nEvents; };
     
   private:
 
     PDFHandler(std::string const& eventCounterAnalysis):
-      pdfMap(),
+      nEvents(0),
       eventCounterAnalysis(eventCounterAnalysis)
     {};
 
@@ -196,18 +198,18 @@ namespace MCgrid
       handlerInstance = 0;
     }
     
-    // Singleton
-    static PDFHandler* handlerInstance;
-    
-    // Map of subprocess PDFs
-    std::map<int, mcgrid_base_pdf*> pdfMap;
+    static PDFHandler* handlerInstance;      //!< Singleton
 
-    // Set of analyses used to keep track of the active analyses
-    std::set<std::string> analyses;
+    std::map<int, mcgrid_base_pdf*> pdfMap;  //!< Map of subprocess PDFs
+    uint64_t nEvents;                        //!< Total event counter of current run
+    std::set<std::string> analyses;          //!< Set of analyses used to keep track
+                                             //!< of the active analyses
 
-    // (Arbitrary) analysis to be used to count events. We get a HandleEvent
-    // call from each analysis used in the run and don't want to double count.
-    // This might be an empty string if the older single-analysis API is used
+    /*!
+      (Arbitrary) analysis to be used to count events. We get a HandleEvent
+      call from each analysis used in the run and don't want to double count.
+      This might be an empty string if the older single-analysis API is used
+    */
     const std::string eventCounterAnalysis;
 
   };

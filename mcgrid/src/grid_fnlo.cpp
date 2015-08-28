@@ -190,11 +190,11 @@ namespace MCgrid {
       cout << "." << endl;
     }
 
-    ftableBase->SetNumberOfEvents(1);
+    ftableBase->SetNumberOfEvents(PDFHandler::NEvents());
     if (isWarmup()) {
       ftableBase->WriteTable();
     } else {
-      ftableNLO->SetNumberOfEvents(1);
+      ftableNLO->SetNumberOfEvents(PDFHandler::NEvents());
       // fastNLOCreate objects cannot contain more than one contribution.
       // Its superclass however can handle this. So let's upcast.
       fastNLOTable *ftable = static_cast<fastNLOTable*>(ftableBase);

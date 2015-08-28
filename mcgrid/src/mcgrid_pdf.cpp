@@ -418,6 +418,7 @@ namespace MCgrid
 
   void PDFHandler::HandleEvent(Rivet::Event const& event)
   {
+    GetHandler()->nEvents++;
     for (std::map<int,mcgrid_base_pdf*>::iterator iCount = GetHandler()->pdfMap.begin(); iCount != GetHandler()->pdfMap.end(); iCount++)
       if (!(*iCount).second->isInitialised())
         (*iCount).second->CountEvent(pdgToLHA(event.genEvent()->pdf_info()->id1()),pdgToLHA(event.genEvent()->pdf_info()->id2()));
