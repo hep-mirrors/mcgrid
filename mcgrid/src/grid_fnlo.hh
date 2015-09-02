@@ -14,11 +14,9 @@ namespace MCgrid {
 
 class _grid_fnlo : public _grid {
 public:
-  // Create a new fastNLO-backed grid based upon a YODA histogram
   _grid_fnlo(const Rivet::Histo1DPtr histPtr,
              const std::string analysis,
              fastnloConfig config);
-
   ~_grid_fnlo();
 
 private:
@@ -26,7 +24,8 @@ private:
   void fillReferenceHistogram(double coord, double wgt);
   bool isWarmup() const;
   void exportgrid();
-  void scale(double const & scale);
+  void scale(double const & scale);           //!< Do nothing in a warmup run
+  void scaleTables(double const & scale);     //!< Scale LO and NLO contributions
   void fillUnderlyingGrid(const double x1,
                           const double x2,
                           const double pdfQ2,
