@@ -34,12 +34,12 @@ namespace MCgrid {
     // Inform the user what we're up to
     cout << "MCgrid: Use fastNLO as underlying grid implementation" << endl;
 
-    const string str = config.subprocConfig.fileName;
-    const string steeringNameSpace = phasespaceFilePath(); 
+    const std::string str = config.subprocConfig.fileName;
+    const std::string steeringNameSpace = phasespaceFilePath();
 
     // Values passed here will overwrite a possible value in the steering
     ADD_NS("DifferentialDimension", 1, steeringNameSpace);
-    vector<int> dimensionIsDifferential(1, 2);
+    std::vector<int> dimensionIsDifferential(1, 2);
     ADDARRAY_NS("DimensionIsDifferential", dimensionIsDifferential, steeringNameSpace);
     ADD_NS("CalculateBinSize", true, steeringNameSpace);
     ADD_NS("BinSizeFactor", 1.0, steeringNameSpace);
@@ -62,18 +62,18 @@ namespace MCgrid {
       ADD_NS("Mu1_NNodes", config.arch.nQ, steeringNameSpace);
       ADD_NS("X_NoOfNodesPerMagnitude", config.arch.nXPerMagnitude, steeringNameSpace);
     }
-    vector<double> description(1, 1.0);
+    std::vector<double> description(1, 1.0);
     ADDARRAY_NS("ScaleVariationFactors", description, steeringNameSpace);
-    
+
     // Read the steering file (it should at least contain the subproc list(s))
     READ_NS(str, steeringNameSpace);
 
 
     // Check some values for consistency if they are set in the steering
-    
+
     if (EXIST_NS(PDF1, steeringNameSpace) && EXIST_NS(PDF2, steeringNameSpace)) {
-      pair<int, int> fastNLOBeams(INT_NS(PDF1, steeringNameSpace), INT_NS(PDF2, steeringNameSpace));
-      pair<int, int> analysisBeams(beamTypeToPDG(config.subprocConfig.beam1),
+       std::pair<int, int> fastNLOBeams(INT_NS(PDF1, steeringNameSpace), INT_NS(PDF2, steeringNameSpace));
+       std::pair<int, int> analysisBeams(beamTypeToPDG(config.subprocConfig.beam1),
                                    beamTypeToPDG(config.subprocConfig.beam2));
       if (fastNLOBeams != analysisBeams) {
         cerr << "MCgrid::Error - The steering file specifies " << fastNLOBeams;
@@ -103,20 +103,20 @@ namespace MCgrid {
       // which uses the capitalized letter to determine
       // a possible second dimension.
       // This is obsolete for 1-dim histograms, but still expected.
-      string capitalized_path(path);
+      std::string capitalized_path(path);
       capitalized_path[0] = toupper(capitalized_path[0]);
-      string rivetID("RIVET_ID=" + analysis.substr(1) + "/" + capitalized_path);
+      std::string rivetID("RIVET_ID=" + analysis.substr(1) + "/" + capitalized_path);
       if (EXISTARRAY_NS(ScenarioDescription, steeringNameSpace)) {
         PUSHBACKARRAY_NS(rivetID, ScenarioDescription, steeringNameSpace);
       } else {
-        vector<string> description(1, rivetID);
+        std::vector<std::string> description(1, rivetID);
         ADDARRAY_NS("ScenarioDescription", description, steeringNameSpace);
       }
     }
 
     if (mode == FILL_SHERPA) {
       if (!EXISTARRAY_NS(CodeDescription, steeringNameSpace)) {
-        vector<string> description(1, "Sherpa");
+        std::vector<std::string> description(1, "Sherpa");
         ADDARRAY_NS("CodeDescription", description, steeringNameSpace);
       }
     }
@@ -197,7 +197,7 @@ namespace MCgrid {
     } else {
       ftableNLO->SetNumberOfEvents(nEvents);
       scaleTables(nEvents);
-      
+
       // fastNLOCreate objects cannot contain more than one contribution.
       // Its superclass however can handle this. So let's upcast.
       fastNLOTable *ftable = static_cast<fastNLOTable*>(ftableBase);
