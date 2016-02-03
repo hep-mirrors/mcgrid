@@ -51,7 +51,7 @@ endef
 
 # plot based on a plot configuration file name ($1)
 define plot
-cd $@ && heppyplot ../plots/$1
+cd $@ && ../plots/$1
 endef
 
 z:
@@ -59,7 +59,7 @@ z:
 	$(call grids-create,$(CDF_PATH),Run.dat)
 	$(call grids-convolute,$(CDF_ANALYSIS),$(CDF_HISTO))
 	$(call reweight,$(CDF_PATH),Run.dat)
-	$(call plot,Z_y.yaml)
+	$(call plot,Z_y.py)
 	$(call finalise)
 
 z-mcatnlo:
@@ -67,8 +67,9 @@ z-mcatnlo:
 	$(call grids-create,$(CDF_PATH),Run_MCatNLO.dat)
 	$(call grids-convolute,$(CDF_ANALYSIS),$(CDF_HISTO))
 	$(call reweight,$(CDF_PATH),Run_MCatNLO.dat)
-	$(call plot,Z_y-mcatnlo.yaml)
+	$(call plot,Z_y.py)
 	$(call finalise)
 
 clean:
-	-rm -r z z-mcatnlo
+	-rm -r z
+	-rm -r z-mcatnlo
