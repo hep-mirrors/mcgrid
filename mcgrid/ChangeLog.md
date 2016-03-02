@@ -1,5 +1,12 @@
 ## Change Log
 
+### MCgrid v2.0 changes 02/03/16
+
+- Handling of the fixed-order modifications introduced by S-MC@NLO events
+- Support for fastNLO tables
+- Support for APPLgrid scale logarithm grids
+- Updated for SHERPA 2.2.1
+
 ### MCgrid v1.2 changes - 16/10/14
 
 - Handling of more than one rivet analysis at once
