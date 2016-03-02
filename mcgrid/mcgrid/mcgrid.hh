@@ -118,14 +118,18 @@ namespace MCgrid {
                    const double _xmin,
                    const double _xmax,
                    const double _q2min,
-                   const double _q2max):
+                   const double _q2max,
+                   const bool _shouldUseScaleLogGrids = false,
+                   const std::string _xMappingFunctionName = "f2"): 
       gridConfig(_lo),
       subprocConfig(_subprocConfig),
       arch(_arch),
       xmin(_xmin),
       xmax(_xmax),
       q2min(_q2min),
-      q2max(_q2max) {}
+      q2max(_q2max),
+      shouldUseScaleLogGrids(_shouldUseScaleLogGrids),
+      xMappingFunctionName(_xMappingFunctionName) {}
 
     const subprocessConfig subprocConfig;
     const applGridArch arch;
@@ -133,6 +137,8 @@ namespace MCgrid {
     const double xmax;
     const double q2min;
     const double q2max;
+    const bool shouldUseScaleLogGrids;      //!< Whether extra scale log grids should be used
+    const std::string xMappingFunctionName; //!< x-to-y mapping function name, can be f, f0, ..., f4, cf. appl_igrid.h
   };
 
   struct fastnloConfig: public gridConfig
@@ -186,6 +192,7 @@ namespace MCgrid {
     
     // Scale the weight output of the grid
     virtual void scale( double const& scale) = 0;
+
   };
   
 }

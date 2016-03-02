@@ -57,7 +57,7 @@ namespace Rivet {
 
 
 #if USE_APPL
-      MCgrid::applGridConfig config(2, subproc, MCgrid::highPrecAPPLgridArch, 1E-5, 1, 10, 1E7);
+      MCgrid::applGridConfig config(2, subproc, MCgrid::highPrecAPPLgridArch, 1E-5, 1, 10, 1E7, false, "f2");
 #elif USE_FNLO
       MCgrid::fastnloGridArch arch(15, 6, "Lagrange", "Lagrange", "sqrtlog10", "loglog025");
       MCgrid::fastnloConfig config(2, subproc, arch, 7000.0);

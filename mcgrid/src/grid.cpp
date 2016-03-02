@@ -97,14 +97,20 @@ template gridPtr bookGrid(const Rivet::Histo1DPtr, const std::string, fastnloCon
 // ************************* grid class *********************************
 
 _grid::_grid(const Rivet::Histo1DPtr histPtr,
-             const std::string _analysis
+             const std::string _analysis,
+             const int _leadingOrder,
+             const bool _isUsingScaleLogGrids,
+             const double _alphaSPrefactor
              ):
-histo         ( histPtr ),
-mode          ( globalFillMode ),
-path          ( idFromPath(histo.get()->path()) ),
-analysis      ( _analysis ),
-fl1projection ( new double[11] ),
-fl2projection ( new double[11] )
+histo                 (histPtr),
+mode                  (globalFillMode),
+path                  (idFromPath(histo.get()->path())),
+analysis              (_analysis),
+leadingOrder          (_leadingOrder),
+isUsingScaleLogGrids  (_isUsingScaleLogGrids),
+alphaSPrefactor       (_alphaSPrefactor),
+fl1projection         (new double[11]),
+fl2projection         (new double[11])
 {
   // Inform the user what we're up to
   cout << "MCgrid: Generating new grid for histogram " << path << " of analysis " << analysis << endl;
@@ -280,7 +286,7 @@ std::string _grid::gridOrPhasespaceFilePath() const
   }
 }
 
-// Scale the weight output of the APPLgrid
+// Scale the weight output (actual implementation in superclasses)
 void _grid::scale(double const& scale)
 {
   cout << "MCgrid: Will set " << path << " normalisation to: " << scale << endl;

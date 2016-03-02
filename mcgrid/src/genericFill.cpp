@@ -41,17 +41,17 @@ void _grid::genericFill(double coord, fillInfo const& info)
 
   const double meweight = info.wgt;
 
-  // NOTE: The correct order must be determined here
+  // NOTE: The correct order must be determined here, we assume LO-only events here
   const double aspowers = leadingOrder;
 
   // Remove the a_S factor from the weight
-  const double asfac = pow(info.alphas / (2*M_PI), aspowers);
+  const double asfac = pow(info.alphas * alphaSPrefactor, aspowers);
   const double meweight_without_asfac = meweight / asfac;
   
   // Populate weight grid and fill the APPLgrid
   zeroWeights();
   fillWeight(info.fl1, info.fl2, meweight_without_asfac, true);
-  fillUnderlyingGrid(info.x1, info.x2, info.pdfQ2, coord, aspowers - leadingOrder);
+  fillUnderlyingGrid(info.x1, info.x2, info.pdfQ2, coord, LO);
   
   return;
 }

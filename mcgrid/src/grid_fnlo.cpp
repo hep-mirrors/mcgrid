@@ -25,7 +25,7 @@ namespace MCgrid {
   _grid_fnlo::_grid_fnlo(const Rivet::Histo1DPtr histPtr,
                          const std::string _analysis,
                          fastnloConfig config):
-    _grid(histPtr, _analysis)
+    _grid(histPtr, _analysis, config.lo)
   {
     // For fastNLO-based grids, we need to create the grid before the pdf,
     // as it is using fastNLOCreate instance methods, for example to retrieve
@@ -98,14 +98,7 @@ namespace MCgrid {
     // Set ScenarioDescription.RIVET_ID default
     if (!CONTAINKEYARRAY_NS(RIVET_ID, ScenarioDescription, steeringNameSpace)) {
       // Generate Rivet ID skipping the leading slash '/'
-      // and capitalizing the first letter (which is a 'd').
-      // The latter is to make fnlo's yodaout happy,
-      // which uses the capitalized letter to determine
-      // a possible second dimension.
-      // This is obsolete for 1-dim histograms, but still expected.
-      std::string capitalized_path(path);
-      capitalized_path[0] = toupper(capitalized_path[0]);
-      std::string rivetID("RIVET_ID=" + analysis.substr(1) + "/" + capitalized_path);
+      std::string rivetID("RIVET_ID=" + analysis.substr(1) + "/" + path);
       if (EXISTARRAY_NS(ScenarioDescription, steeringNameSpace)) {
         PUSHBACKARRAY_NS(rivetID, ScenarioDescription, steeringNameSpace);
       } else {
@@ -156,7 +149,6 @@ namespace MCgrid {
                                     false);
       ftableNLO->SetOrderOfAlphasOfCalculation(config.lo + 1);
     }
-    leadingOrder = ftableBase->GetLoOrder();
 
     mcgrid_base_pdf_params *pdf_params = new mcgrid_fnlo_pdf_params(config.subprocConfig.fileName,
                                                                     ftableBase);
@@ -231,15 +223,19 @@ namespace MCgrid {
                                       const double x2,
                                       const double pdfQ2,
                                       const double coord,
-                                      const double ptord)
+                                      const termType termType)
   {
+    // we do not yet support scale log tables in fastNLO
+    assert(termType == LO || termType == NLO);
+
     // Determine which table should be filled
     fastNLOCreate *ftable;
-    if (isWarmup() || !(ptord == 1)) {
+    if (isWarmup() || !(perturbativeOrderForTermType(termType) == 1)) {
       ftable = ftableBase;
     } else {
       ftable = ftableNLO;
     }
+
     // Fill table
     // For warmup runs, only the combination (x1, x2, Q2)
     // is relevant to update the ranges of the grid dimensions.

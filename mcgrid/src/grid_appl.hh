@@ -31,7 +31,7 @@ private:
                           const double x2,
                           const double pdfQ2,
                           const double coord,
-                          const double ptord);
+                          const termType termType);
   std::string phasespaceFileExtension() const;
   std::string gridFileExtension() const;
 

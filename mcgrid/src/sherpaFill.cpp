@@ -62,7 +62,7 @@ static inline void p2( const int a, double* proj )
   return;
 }
 
- // ************************ SHERPA Fill Method ****************************
+// ************************ SHERPA Fill Method ****************************
 
 /*
  *  grid::sherpaFill
@@ -79,9 +79,10 @@ void _grid::sherpaFill( double coord, sherpaFillInfo const & info)
 
   if (type == ReweightTypeLO) {
     // LO(PS)
+
     fillInfo subInfo(info);
     subInfo.wgt = info.usr_wgt["Reweight_B"];
-    sherpaBLikeFill(coord, norm, subInfo, 0);
+    sherpaBLikeFill(coord, norm, subInfo, LO);
 
   } else {
     // NLO(PS)
@@ -90,25 +91,30 @@ void _grid::sherpaFill( double coord, sherpaFillInfo const & info)
     if (type & ReweightTypeB) {
       fillInfo subInfo(info);
       subInfo.wgt = info.usr_wgt["Reweight_B"];
-      sherpaBLikeFill(coord, norm, subInfo, 0);
+      sherpaBLikeFill(coord, norm, subInfo, LO);
     }
 
     // NLO(PS) VI
     if (type & ReweightTypeVI) {
       fillInfo subInfo(info);
       subInfo.wgt = info.usr_wgt["Reweight_VI"];
-      sherpaBLikeFill(coord, norm, subInfo, 1);
+      sherpaBLikeFill(coord, norm, subInfo, NLO);
+      if (isUsingScaleLogGrids) {
+        subInfo.wgt = info.usr_wgt["Reweight_VI_wren_0"];
+        sherpaBLikeFill(coord, norm, subInfo, RenormalisationSingleLog);
+      }
     }
 
     // NLO(PS) KP
     if (type & ReweightTypeKP) {
-      sherpaKPFill(coord, norm, info);
+      sherpaKPFill(coord, norm, info, NLO);
+      if (isUsingScaleLogGrids) sherpaKPFill(coord, norm, info, FactorisationSingleLog);
     }
 
     // NLOPS DADS terms
     if (type & ReweightTypeDADS) {
       for (size_t i(0); i < info.DADS_fill_infos.size(); i++) {
-        sherpaBLikeFill(coord, norm, info.DADS_fill_infos[i], 1);
+        sherpaBLikeFill(coord, norm, info.DADS_fill_infos[i], NLO);
       }
     }
 
@@ -116,7 +122,7 @@ void _grid::sherpaFill( double coord, sherpaFillInfo const & info)
     if (type & ReweightTypeH) {
       fillInfo subInfo(info);
       subInfo.wgt = info.usr_wgt["Reweight_B"];
-      sherpaBLikeFill(coord, norm, subInfo, 1);
+      sherpaBLikeFill(coord, norm, subInfo, NLO);
     }
 
     // NLO RS
@@ -128,28 +134,32 @@ void _grid::sherpaFill( double coord, sherpaFillInfo const & info)
       fillInfo subInfo(info);
       subInfo.wgt =   info.usr_wgt["Reweight_RS"];
       subInfo.pdfQ2 = info.usr_wgt["MuR2"];
-      sherpaBLikeFill(coord, norm, subInfo, 1);
+      sherpaBLikeFill(coord, norm, subInfo, NLO);
     }
 
   }
 }
 
-void _grid::sherpaBLikeFill(double coord, double norm, fillInfo const& info, int ptord)
+void _grid::sherpaBLikeFill(double coord, double norm, fillInfo const& info, termType type)
 {
+  const int ptord = perturbativeOrderForTermType(type);
   assert(ptord == 0 || ptord == 1); // Only NLO is supported
 
-  const double asfac = pow(info.alphas / (2*M_PI), leadingOrder + ptord);
+  const double asfac = pow(info.alphas * alphaSPrefactor, leadingOrder + ptord);
   const double meweight = norm * info.wgt / asfac;
 
   zeroWeights();
   fillWeight(info.fl1, info.fl2, meweight, false);
-  fillUnderlyingGrid(info.x1, info.x2, info.pdfQ2, coord, ptord);
+  fillUnderlyingGrid(info.x1, info.x2, info.pdfQ2, coord, type);
 }
 
-void _grid::sherpaKPFill(double coord, double norm, sherpaFillInfo const& info)
+void _grid::sherpaKPFill(double coord, double norm, sherpaFillInfo const& info, termType type)
 {
   zeroWeights();
-  const double asfac = pow(info.alphas / (2*M_PI), leadingOrder + 1);
+  const int ptord = perturbativeOrderForTermType(type);
+  assert(ptord == 1); // KP terms only are defined at this order
+
+  const double asfac = pow(info.alphas * alphaSPrefactor, leadingOrder + ptord);
 
   // Read x-prime values
   const double x1p = info.usr_wgt["Reweight_KP_x1p"];
@@ -159,16 +169,22 @@ void _grid::sherpaKPFill(double coord, double norm, sherpaFillInfo const& info)
   double w[8];
   for (int i=0; i<8; i++) {
     std::ostringstream key;
-    key << "Reweight_KP_wfac_" << i;
-    w[i] = norm * info.usr_wgt[key.str()] / asfac;
+    if (type==FactorisationSingleLog) {
+      key << "Reweight_KP_wfac_" << i+8;
+      w[i] = info.usr_wgt[key.str()] / asfac;
+    }
+    else {
+      key << "Reweight_KP_wfac_" << i;
+      w[i] = info.usr_wgt[key.str()] / asfac;
+    }
   }
-  
+
   // Factors of xprime
   w[1]/=x1p;
   w[3]/=x1p;
   w[5]/=x2p;
   w[7]/=x2p;
-  
+
   // First fill - untransformed x values
   // f_a^1 w_1 F_b(x_b) + f_a(x_a) w_5 F_b^1
   projectWeights(info.fl1, info.fl2, w[0], p1, pi, false);
@@ -177,21 +193,23 @@ void _grid::sherpaKPFill(double coord, double norm, sherpaFillInfo const& info)
   // f_a^3 w_3 F_b(x_b) + f_a(x_a)w_7 F_b^3
   projectWeights(info.fl1, info.fl2, w[2], p2, pi, false);
   projectWeights(info.fl1, info.fl2, w[6], pi, p2, false);
-  fillUnderlyingGrid(info.x1, info.x2, info.pdfQ2, coord, 1);
-  
+
+  fillUnderlyingGrid(info.x1, info.x2, info.pdfQ2, coord, type);
+
   // Prepare for x1p fill
   zeroWeights();
-  
+
   // f_a^2 w_2 F_b(x_b) + f_a^4 w_4 F_b(x_b)
   projectWeights(info.fl1, info.fl2, w[1], p1, pi, false);
   projectWeights(info.fl1, info.fl2, w[3], p2, pi, false);
-  fillUnderlyingGrid(info.x1/x1p, info.x2, info.pdfQ2, coord, 1);
+  fillUnderlyingGrid(info.x1/x1p, info.x2, info.pdfQ2, coord, type);
   
+
   // Prepare for x2p fill
   zeroWeights();
-  
+
   // f_a(x_a) w_6 F_b^2 + f_a(x_a) w_8 F_b^4
   projectWeights(info.fl1, info.fl2, w[5], pi, p1, false);
   projectWeights(info.fl1, info.fl2, w[7], pi, p2, false);
-  fillUnderlyingGrid(info.x1, info.x2/x2p, info.pdfQ2, coord, 1);  
+  fillUnderlyingGrid(info.x1, info.x2/x2p, info.pdfQ2, coord, type);    
 }

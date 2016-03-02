@@ -48,7 +48,10 @@ public:
 
   // Create a new grid based upon a YODA histogram
   _grid(const Rivet::Histo1DPtr,
-        const std::string _analysis);
+        const std::string _analysis,
+        const int _leadingOrder,
+        const bool _isUsingScaleLogGrids = false,
+        const double _alphaSPrefactor = 1/(2.0*M_PI));
 
   ~_grid();
 
@@ -65,16 +68,27 @@ protected:
   // Scale the weight output of the grid
   virtual void scale( double const& scale);
 
-  const Rivet::Histo1DPtr histo;  //!< Pointer to associated rivet histogram
-  const std::string path;         //!< Path identifier obtained from histogram
-  const std::string analysis;     //!< Analysis subdirectory
+  const Rivet::Histo1DPtr histo;   //!< Pointer to associated rivet histogram
+  const std::string path;          //!< Path identifier obtained from histogram
+  const std::string analysis;      //!< Analysis subdirectory
 
-  int   leadingOrder;             //!< Leading order of process
-  const fillMode  mode;           //!< Determines fill method call
+  int   leadingOrder;              //!< Leading order of process
+  const fillMode  mode;            //!< Determines fill method call
+  const bool isUsingScaleLogGrids; //!< Whether scale logarithms are filled into their own grids
+  const double alphaSPrefactor;    //!< The factor with which AlphaS is dressed before dividing AlphaS^n from weights
 
-  int        nSubProc;            //!< Number of active subprocesses
-  mcgrid_base_pdf* pdf;           //!< PDF for subprocess classification
-  double*    weights;             //!< Array of subprocess weights to be passed to appl::grid::fill or fastNLOCreate::fill
+  int        nSubProc;             //!< Number of active subprocesses
+  mcgrid_base_pdf* pdf;            //!< PDF for subprocess classification
+  double*    weights;              //!< Array of subprocess weights to be passed to appl::grid::fill or fastNLOCreate::fill
+  
+  // The term type is used to differentiate between contributions that might be tracked by different subgrids
+  typedef enum termType {
+    LO,
+    NLO,
+    RenormalisationSingleLog,
+    FactorisationSingleLog
+  } termType;
+  inline int perturbativeOrderForTermType(const termType type) const { return (type == LO) ? 0 : 1; };
 
 private:
 
@@ -91,14 +105,14 @@ private:
   // Fillmodes specify the conversion from HepMC
   void genericFill(double coord, fillInfo const&);  // Basic fillmode
   void sherpaFill( double coord, sherpaFillInfo const&); // SHERPA fillmode
-  void sherpaBLikeFill(double coord, double norm, fillInfo const&, int ptord);
-  void sherpaKPFill(double coord, double norm, sherpaFillInfo const&);
+  void sherpaBLikeFill(double coord, double norm, fillInfo const&, termType termType);
+  void sherpaKPFill(double coord, double norm, sherpaFillInfo const&, termType termType);
 
   virtual void fillUnderlyingGrid(const double x1,
                                   const double x2,
                                   const double pdfQ2,
                                   const double coord,
-                                  const double ptord) = 0;
+                                  const termType termType) = 0;
   
   // Populate the subprocess weight array with a single weight
   // The weight is multiplied by the return value of the EventRatio function,

@@ -39,7 +39,7 @@ namespace Rivet {
                                                    MCgrid::BEAM_PROTON,
                                                    MCgrid::BEAM_ANTIPROTON);
       MCgrid::applGridArch arch_appl(50, 1, 5, 0);
-      MCgrid::applGridConfig config_appl(0, subproc_config_appl, arch_appl, 1E-5, 1, 8315.18, 8315.18);
+      MCgrid::applGridConfig config_appl(0, subproc_config_appl, arch_appl, 1E-5, 1, 8315.18, 8315.18, false, "f2");
       _appl_xs = MCgrid::bookGrid(_h_xs, histoDir(), config_appl);
       _appl_yZ = MCgrid::bookGrid(_h_yZ, histoDir(), config_appl);
 #endif

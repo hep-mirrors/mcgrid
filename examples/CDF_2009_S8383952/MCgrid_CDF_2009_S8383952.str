@@ -36,7 +36,7 @@ DimensionLabels {
 
 ScenarioDescription {
    "Description"
-   "RIVET_ID=MCgrid_CDF_2009_S8383952/D02-x01-y01"
+   "RIVET_ID=MCgrid_CDF_2009_S8383952/d02-x01-y01"
 }
 
 ## MCgrid default: ["Sherpa"]

@@ -33,6 +33,9 @@ plugin-applgrid-and-fastnlo:
 plugin-applgrid:
 	rivet-buildplugin $(RTARGET) $(RSOURCES) $(PLGFLAGS) $(PLGLDFLAGS) -DUSE_APPL=1
 
+plugin-applgrid-scale-log-grids:
+	rivet-buildplugin $(RTARGET) $(RSOURCES) $(PLGFLAGS) $(PLGLDFLAGS) -DUSE_APPL=1 -DUSE_SCALE_LOG_GRIDS
+
 plugin-fastnlo:
 	rivet-buildplugin $(RTARGET) $(RSOURCES) $(PLGFLAGS) $(PLGLDFLAGS) -DUSE_FNLO=1
 	
