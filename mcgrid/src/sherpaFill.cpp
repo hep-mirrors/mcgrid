@@ -120,9 +120,9 @@ void _grid::sherpaFill( double coord, sherpaFillInfo const & info)
 
     // NLOPS H
     if (type & ReweightTypeH) {
-      fillInfo subInfo(info);
-      subInfo.wgt = info.usr_wgt["Reweight_B"];
-      sherpaBLikeFill(coord, norm, subInfo, NLO);
+      for (size_t i(0); i < info.RDA_fill_infos.size(); i++) {
+        sherpaBLikeFill(coord, norm, info.RDA_fill_infos[i], NLO);
+      }
     }
 
     // NLO RS

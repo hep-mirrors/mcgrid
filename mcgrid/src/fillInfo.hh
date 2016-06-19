@@ -22,6 +22,9 @@ namespace MCgrid {
 
     // Initialise (DADS) fill info from Sherpa fill info user weights
     fillInfo(HepMC::WeightContainer const &, std::string const & usr_wgt_key_prefix, const double pdfQ2, const double alphas);
+    
+    // Initialise (RDA) fill info from Sherpa fill info user weights
+    fillInfo(HepMC::WeightContainer const &, std::string const & usr_wgt_key_prefix, int fl1, int fl2, double x1, double x2);
 
     double wgt;      //!< Event weight
 

@@ -14,36 +14,59 @@ namespace MCgrid {
   fillInfo(event),
   usr_wgt(event.genEvent()->weights()),
   reweight_type((ReweightType)usr_wgt["Reweight_Type"]),
-  DADS_fill_infos(DADSInfos(usr_wgt, pdfQ2, alphas))
+  DADS_fill_infos(DADSInfos(usr_wgt, pdfQ2, alphas)),
+  RDA_fill_infos(RDAInfos(usr_wgt, fl1, fl2, x1, x2, alphas))
   { }
 
-  std::vector<fillInfo> sherpaFillInfo::DADSInfos(HepMC::WeightContainer const & usr_wgt, const double pdfQ2, const double alphas)
+  std::vector<fillInfo> sherpaFillInfo::DADSInfos(HepMC::WeightContainer const & usr_wgt,
+                                                 const double pdfQ2, const double alphas)
   {
-    std::vector<fillInfo> DADSInfos;
+    std::vector<fillInfo> subInfos;
+    const std::string sub_info_tag("DADS");
 
-    for (size_t i(0); i < numberOfDADSTerms(usr_wgt); i++) {
-      std::string key_prefix = keyPrefixForEntryWithIndex(i);
+    for (size_t i(0); i < numberOfTerms(usr_wgt, sub_info_tag); i++) {
+      std::string key_prefix = keyPrefixForEntryWithIndex(i, sub_info_tag);
       if (hasNonZeroWeightEntryForKeyPrefix(usr_wgt, key_prefix)) {
         fillInfo info(usr_wgt, key_prefix, pdfQ2, alphas);
-        DADSInfos.push_back(info);
+        subInfos.push_back(info);
       }
     }
 
-    return DADSInfos;
+    return subInfos;
   }
 
-  size_t sherpaFillInfo::numberOfDADSTerms(HepMC::WeightContainer const & usr_wgt)
+  std::vector<fillInfo> sherpaFillInfo::RDAInfos(HepMC::WeightContainer const & usr_wgt,
+                                                 int fl1, int fl2, double x1, double x2,
+                                                 const double alphas)
   {
-    if (!usr_wgt.has_key("Reweight_DADS_N")) {
-      return 0;
+    std::vector<fillInfo> subInfos;
+    const std::string sub_info_tag("RDA");
+
+    for (size_t i(0); i < numberOfTerms(usr_wgt, sub_info_tag); i++) {
+      std::string key_prefix = keyPrefixForEntryWithIndex(i, sub_info_tag);
+      if (hasNonZeroWeightEntryForKeyPrefix(usr_wgt, key_prefix)) {
+        fillInfo info(usr_wgt, key_prefix, fl1, fl2, x1, x2);
+        subInfos.push_back(info);
+      }
     }
-    return (size_t)usr_wgt["Reweight_DADS_N"];
+
+    return subInfos;
   }
 
-  std::string sherpaFillInfo::keyPrefixForEntryWithIndex(size_t index)
+  size_t sherpaFillInfo::numberOfTerms(HepMC::WeightContainer const & usr_wgt, std::string const & sub_info_tag)
   {
     std::ostringstream key;
-    key << "Reweight_DADS_" << index << "_";
+    key << "Reweight_" << sub_info_tag << "_N";
+    if (!usr_wgt.has_key(key.str())) {
+      return 0;
+    }
+    return (size_t)usr_wgt[key.str()];
+  }
+
+  std::string sherpaFillInfo::keyPrefixForEntryWithIndex(size_t index, std::string const & sub_info_tag)
+  {
+    std::ostringstream key;
+    key << "Reweight_" << sub_info_tag << "_" << index << "_";
     return key.str();
   }
 

@@ -52,4 +52,14 @@ namespace MCgrid {
   alphas(alphas)
   { }
 
+  fillInfo::fillInfo(HepMC::WeightContainer const & usr_wgt, std::string const & usr_wgt_key_prefix, int fl1, int fl2, double x1, double x2):
+  wgt(usr_wgt[usr_wgt_key_prefix + "Weight"]),
+  fl1(fl1),
+  fl2(fl2),
+  x1(x1),
+  x2(x2),
+  pdfQ2(usr_wgt[usr_wgt_key_prefix + "MuF12"]),
+  alphas(usr_wgt[usr_wgt_key_prefix + "AlphaS"])
+  { }
+
 }

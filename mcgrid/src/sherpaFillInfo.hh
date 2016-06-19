@@ -33,12 +33,17 @@ namespace MCgrid {
     const HepMC::WeightContainer & usr_wgt;
     const ReweightType reweight_type;
     const std::vector<fillInfo> DADS_fill_infos;
+    const std::vector<fillInfo> RDA_fill_infos;
 
   private:
-    // Helper methods to construct DADS fill infos from user weights
-    static std::vector<fillInfo> DADSInfos(HepMC::WeightContainer const &, const double pdfQ2, const double alphas);
-    static size_t numberOfDADSTerms(HepMC::WeightContainer const &);
-    static std::string keyPrefixForEntryWithIndex(size_t);
+    // Helper methods to construc sub fill infos (DADS/RDA) from user weights
+    static std::vector<fillInfo> DADSInfos(HepMC::WeightContainer const &,
+                                           const double pdfQ2, const double alphas);
+    static std::vector<fillInfo> RDAInfos(HepMC::WeightContainer const &,
+                                          int fl1, int fl2, double x1, double x2,
+                                          const double alphas);
+    static size_t numberOfTerms(HepMC::WeightContainer const &, std::string const &);
+    static std::string keyPrefixForEntryWithIndex(size_t, std::string const &);
     static bool hasNonZeroWeightEntryForKeyPrefix(HepMC::WeightContainer const &, std::string const &);
   };
 
