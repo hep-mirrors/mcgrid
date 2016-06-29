@@ -15,7 +15,7 @@ namespace MCgrid {
   usr_wgt(event.genEvent()->weights()),
   reweight_type((ReweightType)usr_wgt["Reweight_Type"]),
   DADS_fill_infos(DADSInfos(usr_wgt, pdfQ2, alphas)),
-  RDA_fill_infos(RDAInfos(usr_wgt, fl1, fl2, x1, x2, alphas))
+  RDA_fill_infos(RDAInfos(usr_wgt, fl1, fl2, x1, x2))
   { }
 
   std::vector<fillInfo> sherpaFillInfo::DADSInfos(HepMC::WeightContainer const & usr_wgt,
@@ -36,8 +36,7 @@ namespace MCgrid {
   }
 
   std::vector<fillInfo> sherpaFillInfo::RDAInfos(HepMC::WeightContainer const & usr_wgt,
-                                                 int fl1, int fl2, double x1, double x2,
-                                                 const double alphas)
+                                                 int fl1, int fl2, double x1, double x2)
   {
     std::vector<fillInfo> subInfos;
     const std::string sub_info_tag("RDA");
