@@ -43,31 +43,42 @@ namespace Rivet {
       _h_yZ = bookHisto1D(2, 1, 1);
       
 #if USE_APPL
+      // Subprocess identification or full set of subprocesses
       //const string subproc_config_appl_file("MCgrid_CDF_2009_S8383952.config");
       const string subproc_config_appl_file("basic.config");
       MCgrid::subprocessConfig subproc_config_appl(subproc_config_appl_file,
                                                    MCgrid::BEAM_PROTON,
                                                    MCgrid::BEAM_ANTIPROTON);
-      MCgrid::applGridArch arch_appl(50, 1, 5, 0);
+      // Grid architecture suitable for fixed/flexible scales
+      //MCgrid::applGridArch arch_appl(50, 1, 5, 0);
+      //const double minstartingscale(8315.18);
+      //const double maxstartingscale(8315.18);
+      MCgrid::applGridArch arch_appl(MCgrid::highPrecAPPLgridArch);
+      const double minstartingscale(1);
+      const double maxstartingscale(1E7);
 #if USE_SCALE_LOG_GRIDS
       const bool should_use_scale_log_grids(true);
 #else
       const bool should_use_scale_log_grids(false);
 #endif
       MCgrid::applGridConfig config_appl(0, subproc_config_appl, arch_appl,
-		                         1E-5, 1, 8315.18, 8315.18,
+		                         1E-5, 1,
+                                         minstartingscale, maxstartingscale,
 					 should_use_scale_log_grids, "f2");
       _appl_xs = MCgrid::bookGrid(_h_xs, histoDir(), config_appl);
       _appl_yZ = MCgrid::bookGrid(_h_yZ, histoDir(), config_appl);
 #endif
 
 #if USE_FNLO
+      // Subprocess identification or full set of subprocesses
       //const string subproc_config_fnlo_file("MCgrid_CDF_2009_S8383952.str");
       const string subproc_config_fnlo_file("basic.str");
       MCgrid::subprocessConfig subproc_config_fnlo(subproc_config_fnlo_file,
                                                    MCgrid::BEAM_PROTON,
                                                    MCgrid::BEAM_ANTIPROTON);
-      MCgrid::fastnloGridArch arch_fnlo(50, 1, "Lagrange", "OneNode", "sqrtlog10", "linear");
+      // Grid architecture suitable for fixed/flexible scales
+      /* MCgrid::fastnloGridArch arch_fnlo(50, 1, "Lagrange", "OneNode", "sqrtlog10", "linear"); */
+      MCgrid::fastnloGridArch arch_fnlo(MCgrid::highPrecFastNLOgridArch);
       MCgrid::fastnloConfig config_fnlo(0, subproc_config_fnlo, arch_fnlo, 1960.0);
       _fnlo_xs = MCgrid::bookGrid(_h_xs, histoDir(), config_fnlo);
       _fnlo_yZ = MCgrid::bookGrid(_h_yZ, histoDir(), config_fnlo);

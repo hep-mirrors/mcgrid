@@ -4,6 +4,13 @@
   SCALEFACTOR:=1.
   ANALYSIS Rivet
 
+   % Define fixed/flexible scale choice; explicitly set the resummation scale
+   % to ensure it is not varied alongside the other scales
+  SCALEFACTOR:=1.
+  #SCALETAG:=8315.18
+  SCALETAG:=H_Tp2
+  SCALES VAR{SCALEFACTOR*SCALETAG}{SCALEFACTOR*SCALETAG}{SCALETAG}
+
   % Enforce parton-level
   FRAGMENTATION=Off
   YFS_MODE=0
@@ -33,7 +40,6 @@
 
 (beam){
   % Tevatron collider setup
-  BEAM_REMNANTS=0
   BEAM_1  2212; BEAM_ENERGY_1 980
   BEAM_2 -2212; BEAM_ENERGY_2 980
 }(beam);
@@ -41,7 +47,6 @@
 (me){
   ME_SIGNAL_GENERATOR Amegic, Comix, Internal
   EVENT_GENERATION_MODE Weighted
-  SCALES VAR{SCALEFACTOR*8315.18}
   ME_QED=Off
 }(me);
 
