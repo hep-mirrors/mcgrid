@@ -1,5 +1,5 @@
 AC_PREREQ([2.69])
-AC_INIT([MCgrid], [2.0], [mcgrid@projects.hepforge.org])
+AC_INIT([MCgrid], [2.0.1], [mcgrid@projects.hepforge.org])
 AC_CONFIG_SRCDIR([src/grid.cpp])
 AC_CONFIG_HEADERS([mcgrid/config.h])
 AC_CONFIG_MACRO_DIR([m4])
@@ -20,6 +20,10 @@ LT_INIT
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_INSTALL
+
+# Check for C++11 support
+AC_LANG([C++])
+AX_CXX_COMPILE_STDCXX_11
 
 # Checks for Rivet and grid implementations
 AC_SEARCH_RIVET

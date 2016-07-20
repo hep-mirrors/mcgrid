@@ -134,7 +134,7 @@ namespace MCgrid
       
       if (testint != NumberOfSubprocesses())
       {
-        cerr << "MCGrid::mcgrid_pdf Error: Event counter information in "<< filename<<" is inconsistent with PDF config file"<<endl;
+        cerr << "MCGrid::mcgrid_pdf Error: Event counter information in "<< filename.str()<<" is inconsistent with PDF config file"<<endl;
         cerr << "                          Please rerun the phase space optimisation."<<endl;
         exit(-1);
       }
@@ -144,7 +144,7 @@ namespace MCgrid
         datastream >> teststr >> testint >> teststr >> nPairs[i] >> teststr >> nSubEvents[i];
         if (testint != i )
         {
-          cerr << "MCGridmcgrid_pdf Error: Event counter information in "<< filename<<" is incorrectly formatted"<<endl;
+          cerr << "MCGridmcgrid_pdf Error: Event counter information in "<< filename.str()<<" is incorrectly formatted"<<endl;
           cerr << "                        Please rerun the phase space optimisation."<<endl;
           exit(-1);
         }
@@ -158,7 +158,7 @@ namespace MCgrid
         
         if (testint != i )
         {
-          cerr << "MCGridmcgrid_pdf Error: Event counter information in "<< filename<<" is incorrectly formatted"<<endl;
+          cerr << "MCGridmcgrid_pdf Error: Event counter information in "<< filename.str()<<" is incorrectly formatted"<<endl;
           cerr << "                        Please rerun the phase space optimisation."<<endl;
           exit(-1);
         }

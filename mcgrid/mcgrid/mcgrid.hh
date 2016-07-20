@@ -167,7 +167,7 @@ namespace MCgrid {
   // *********************** Booking Functions **************************
     
   // Book a MCgrid::grid object, returning the shared pointer
-  class grid; typedef boost::shared_ptr<grid> gridPtr;
+  class grid; typedef std::shared_ptr<grid> gridPtr;
   template<class T>
   gridPtr bookGrid(const Rivet::Histo1DPtr hist,     // Corresponding Rivet Histogram
                    const std::string histoDir,       // Rivet Histogram directory

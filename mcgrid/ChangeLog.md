@@ -1,5 +1,8 @@
 ## Change Log
 
+### MCgrid v2.0.1 changes 20/07/16
+- Updated for Rivet 2.5.0 (removed boost dependence)
+
 ### MCgrid v2.0 changes 02/03/16
 
 - Handling of the fixed-order modifications introduced by S-MC@NLO events
