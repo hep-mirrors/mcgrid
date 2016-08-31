@@ -168,15 +168,15 @@ void _grid::sherpaKPFill(double coord, double norm, sherpaFillInfo const& info, 
   // Prepare weights
   double w[8];
   for (int i=0; i<8; i++) {
+    int key_index;
+    if (type == FactorisationSingleLog) {
+      key_index = i + 8;
+    } else {
+      key_index = i;
+    }
     std::ostringstream key;
-    if (type==FactorisationSingleLog) {
-      key << "Reweight_KP_wfac_" << i+8;
-      w[i] = info.usr_wgt[key.str()] / asfac;
-    }
-    else {
-      key << "Reweight_KP_wfac_" << i;
-      w[i] = info.usr_wgt[key.str()] / asfac;
-    }
+    key << "Reweight_KP_wfac_" << key_index;
+    w[i] = norm * info.usr_wgt[key.str()] / asfac;
   }
 
   // Factors of xprime
