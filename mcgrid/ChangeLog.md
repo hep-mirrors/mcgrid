@@ -1,5 +1,8 @@
 ## Change Log
 
+### MCgrid v2.0.2 changes 13/09/16
+- Fixed a critical bug in the KP term normalisation when subprocess ID is used
+
 ### MCgrid v2.0.1 changes 20/07/16
 - Updated for Rivet 2.5.0 (removed boost dependence)
 
