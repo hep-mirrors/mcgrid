@@ -4,7 +4,7 @@
   NLOPART:=BVIRS;
   FSF:=1.; RSF:=1.; QSF:=1.;
   ANALYSIS Rivet;
-  MINPT:=18.;
+  J1CUT:=18.; J2CUT:=10.;
   LOOPGEN:=BlackHat;
   ANALYSIS Rivet
 
@@ -15,7 +15,7 @@
   % because usually the PDF provided a_s running does not know about the top.
   MASS[6] = 1e20;
 
-}(run)
+}(run);
 
 (isr){
   BEAM_REMNANTS=0;
@@ -34,9 +34,9 @@
 }(beam);
 
 (me){
-  ME_SIGNAL_GENERATOR Comix, Internal;
+  ME_SIGNAL_GENERATOR Amegic Internal LOOPGEN;
   EVENT_GENERATION_MODE Weighted;
-  SCALES FASTJET[A:antikt,PT:MINPT,ET:0,R:0.5,M:0]{FSF*0.0625*H_T2}{RSF*0.0625*H_T2}{QSF*0.25*PPerp2(p[3])};
+  SCALES FASTJET[A:antikt,PT:J1CUT,ET:0,R:0.5,M:0]{FSF*0.0625*H_T2}{RSF*0.0625*H_T2}{QSF*0.25*PPerp2(p[3])};
 }(me);
 
 (processes){
@@ -49,7 +49,8 @@
 }(processes);
 
 (selector){
-  FastjetFinder  antikt 1  MINPT  0.0  0.5;
+  FastjetFinder  antikt 2  J2CUT  0.0  0.4
+  FastjetFinder  antikt 1  J1CUT  0.0  0.4
 }(selector);
 
 (analysis){
